@@ -22,7 +22,7 @@ import com.example.bloombackend.bottlemsg.entity.BottleMessageReaction;
 import com.example.bloombackend.bottlemsg.entity.BottleMessageReceiptLog;
 import com.example.bloombackend.bottlemsg.entity.ReactionType;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageLogRepository;
-import com.example.bloombackend.bottlemsg.repository.BottleMessageReactionRepositoryRepository;
+import com.example.bloombackend.bottlemsg.repository.BottleMessageReactionRepository;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageRepository;
 import com.example.bloombackend.user.entity.UserEntity;
 import com.example.bloombackend.user.service.UserService;
@@ -32,28 +32,26 @@ public class BottleMessageService {
 	private final BottleMessageRepository bottleMessageRepository;
 	private final BottleMessageLogRepository bottleMessageLogRepository;
 	private final UserService userService;
-	private final BottleMessageReactionRepositoryRepository bottleMessageReactionRepository;
+	private final BottleMessageReactionRepository bottleMessageReactionRepository;
 
 	@Autowired
 	public BottleMessageService(BottleMessageRepository bottleMessageRepository,
-		BottleMessageLogRepository botleMessageLogRepository, UserService userService,
-		BottleMessageReactionRepositoryRepository bottleMessageReactionRepository) {
+		BottleMessageLogRepository bottleMessageLogRepository, UserService userService,
+		BottleMessageReactionRepository bottleMessageReactionRepository) {
 		this.bottleMessageRepository = bottleMessageRepository;
-		this.bottleMessageLogRepository = botleMessageLogRepository;
+		this.bottleMessageLogRepository = bottleMessageLogRepository;
 		this.userService = userService;
 		this.bottleMessageReactionRepository = bottleMessageReactionRepository;
 	}
 
 	@Transactional
 	public CreateBottleMessageResponse createBottleMessage(Long userId, CreateBottleMessageRequest request) {
-		return CreateBottleMessageResponse.of(bottleMessageRepository.save(
-			BottleMessageEntity.builder()
-				.content(request.content())
-				.user(userService.findUserById(userId))
-				.title(request.title())
-				.postcardUrl(request.postCard())
-				.build()
-		).getId());
+		return CreateBottleMessageResponse.of(bottleMessageRepository.save(BottleMessageEntity.builder()
+			.content(request.content())
+			.user(userService.findUserById(userId))
+			.title(request.title())
+			.postcardUrl(request.postCard())
+			.build()).getId());
 	}
 
 	@Transactional
@@ -65,20 +63,14 @@ public class BottleMessageService {
 	}
 
 	private void createBottleMessageReceiptLog(Long userId, BottleMessageEntity message) {
-		BottleMessageReceiptLog log = BottleMessageReceiptLog.builder()
-			.recipient(userService.findUserById(userId))
-			.message(message)
-			.build();
-		bottleMessageLogRepository.save(log);
+		bottleMessageLogRepository.save(
+			BottleMessageReceiptLog.builder()
+				.recipient(userService.findUserById(userId))
+				.message(message).build());
 	}
 
 	private BottleMessageEntity findRandomUnreceivedMessage(Long userId) {
 		List<BottleMessageEntity> unreceivedMessages = bottleMessageRepository.findUnreceivedMessagesByUserId(userId);
-
-		if (unreceivedMessages.isEmpty()) {
-			throw new NoSuchElementException("No unreceived messages found.");
-		}
-
 		return unreceivedMessages.get(new Random().nextInt(unreceivedMessages.size()));
 	}
 
@@ -93,14 +85,10 @@ public class BottleMessageService {
 	}
 
 	@Transactional(readOnly = true)
-	public UserBottleMessagesResponse getBottleMessages(Long userId) {
+	public UserBottleMessagesResponse getUserBottleMessages(Long userId) {
 		List<BottleMessageEntity> savedMessages = bottleMessageRepository.findSavedMessagesByUserId(userId);
-		if (savedMessages.isEmpty()) {
-			throw new NoSuchElementException("No unreceived messages found.");
-		}
-		return new UserBottleMessagesResponse(savedMessages.stream()
-			.map(BottleMessageEntity::toDto)
-			.collect(Collectors.toList()));
+		return new UserBottleMessagesResponse(
+			savedMessages.stream().map(BottleMessageEntity::toDto).collect(Collectors.toList()));
 	}
 
 	@Transactional(readOnly = true)
@@ -116,29 +104,24 @@ public class BottleMessageService {
 		ReactionType reactionType = ReactionType.valueOf(request.reaction());
 		BottleMessageEntity message = getBottleMessageEntity(messageId);
 		return getReactionCount(bottleMessageReactionRepository.save(
-			BottleMessageReaction.builder()
-				.message(message)
-				.reactionType(reactionType)
-				.build()
-		).getMessage().getId());
+			BottleMessageReaction.builder().message(message).reactionType(reactionType).build()).getMessage().getId());
 	}
 
 	@Transactional
-	public UserBottleMessagesResponse deleteBottleMessage(Long messageId, Long userId) {
+	public UserBottleMessagesResponse deleteBottleMessage(Long userId, Long messageId) {
 		UserEntity recipient = userService.findUserById(userId);
-		Optional<BottleMessageReceiptLog> message = bottleMessageLogRepository.findByBottleMessageIdAndRecipient(
+		Optional<BottleMessageReceiptLog> message = bottleMessageLogRepository.findByMessageIdAndRecipient(
 			messageId, recipient);
 
 		if (message.isPresent()) {
 			message.get().delete();
 		}
 
-		return getBottleMessages(userId);
+		return getUserBottleMessages(userId);
 	}
 
 	private BottleMessageEntity getBottleMessageEntity(Long messageId) {
 		return bottleMessageRepository.findById(messageId)
 			.orElseThrow(() -> new NoSuchElementException("Message with ID " + messageId + " not found."));
 	}
-
 }
