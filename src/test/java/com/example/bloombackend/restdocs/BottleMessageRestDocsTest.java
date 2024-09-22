@@ -116,6 +116,11 @@ public class BottleMessageRestDocsTest {
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
 			.andDo(document("api-bottle-message-test/post-bottle-message",
+				requestFields(
+					fieldWithPath("title").description("등록할 유리병 메시지 제목"),
+					fieldWithPath("content").description("등록할 유리병 메시지 내용"),
+					fieldWithPath("postCard").description("선택한 편지지 url")
+				),
 				responseFields(
 					fieldWithPath("id").description("등록한 유리병 메시지 아이디"),
 					fieldWithPath("analysis").description("등록한 유리병 메시지의 분석 결과"),
@@ -229,6 +234,9 @@ public class BottleMessageRestDocsTest {
 				pathParameters(
 					parameterWithName("messageId").description("조회할 메시지 아이디")
 				),
+				requestFields(
+					fieldWithPath("reaction").description("등록할 반응 (LIKE,CHEER,EMPATHY)")
+				),
 				responseFields(
 					fieldWithPath("isReacted").description("유저의 반응여부"),
 					fieldWithPath("like").description("좋아요 개수"),
@@ -302,9 +310,6 @@ public class BottleMessageRestDocsTest {
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andDo(document("api-bottle-message-test/get-sent-bottle-messages",
-				pathParameters(
-					parameterWithName("messageId").description("삭제할 메시지 아이디")
-				),
 				responseFields(
 					fieldWithPath("bottleMessageResponses[]").description("유리병 메시지 목록"),
 					fieldWithPath("bottleMessageResponses[].log").description("유리병 메시지 수발신 로그 정보"),
@@ -339,6 +344,9 @@ public class BottleMessageRestDocsTest {
 			.andDo(document("api-bottle-message-test/delete-bottle-messages-reaction",
 				pathParameters(
 					parameterWithName("messageId").description("반응을 삭제할 메시지 아이디")
+				),
+				requestFields(
+					fieldWithPath("reaction").description("삭제할 반응(LIKE,EMPATHY,CHEER)")
 				)
 			));
 	}

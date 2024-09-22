@@ -16,7 +16,7 @@ include::{snippets}/api-bottle-message-test/post-bottle-message/http-request.ado
 
 ==== request body
 
-include::{snippets}/api-bottle-message-test/post-bottle-message/request-body.adoc[]
+include::{snippets}/api-bottle-message-test/post-bottle-message/request-fields.adoc[]
 
 ==== HTTP response
 
@@ -116,7 +116,7 @@ include::{snippets}/api-bottle-message-test/post-bottle-message-reaction/path-pa
 
 ==== request body
 
-include::{snippets}/api-bottle-message-test/post-bottle-message-reaction/request-body.adoc[]
+include::{snippets}/api-bottle-message-test/post-bottle-message-reaction/request-fields.adoc[]
 
 ==== HTTP response
 
@@ -138,7 +138,7 @@ include::{snippets}/api-bottle-message-test/delete-bottle-messages-reaction/path
 
 ==== request body
 
-include::{snippets}/api-bottle-message-test/delete-bottle-messages-reaction/request-body.adoc[]
+include::{snippets}/api-bottle-message-test/delete-bottle-messages-reaction/request-fields.adoc[]
 
 ==== HTTP response
 
