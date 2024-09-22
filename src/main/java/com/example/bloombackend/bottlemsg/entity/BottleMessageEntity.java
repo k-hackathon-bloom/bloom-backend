@@ -48,7 +48,7 @@ public class BottleMessageEntity {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "negativity")
-	private Nagativity nagativity;
+	private Negativity negativity;
 
 	@Getter
 	@CreationTimestamp
@@ -56,13 +56,13 @@ public class BottleMessageEntity {
 	private LocalDateTime createdAt;
 
 	@Builder
-	public BottleMessageEntity(UserEntity user, String content, String title, String postcardUrl, Nagativity nagativity,
+	public BottleMessageEntity(UserEntity user, String content, String title, String postcardUrl, Negativity negativity,
 		LocalDateTime sentAt) {
 		this.sender = user;
 		this.content = content;
 		this.title = title;
 		this.postcardUrl = postcardUrl;
-		this.nagativity = nagativity;
+		this.negativity = negativity;
 	}
 
 	public BottleMessageResponse toDto() {
@@ -71,7 +71,7 @@ public class BottleMessageEntity {
 			.content(content)
 			.title(title)
 			.postCardUrl(postcardUrl)
-			.negativity(nagativity.name())
+			.negativity(negativity.name())
 			.build();
 	}
 }

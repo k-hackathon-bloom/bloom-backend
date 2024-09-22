@@ -24,7 +24,7 @@ import com.example.bloombackend.bottlemsg.controller.dto.response.UserBottleMess
 import com.example.bloombackend.bottlemsg.entity.BottleMessageEntity;
 import com.example.bloombackend.bottlemsg.entity.BottleMessageReaction;
 import com.example.bloombackend.bottlemsg.entity.BottleMessageReceiptLog;
-import com.example.bloombackend.bottlemsg.entity.Nagativity;
+import com.example.bloombackend.bottlemsg.entity.Negativity;
 import com.example.bloombackend.bottlemsg.entity.ReactionType;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageLogRepository;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageReactionRepository;
@@ -61,7 +61,7 @@ public class BottleMessageService {
 			.user(userService.findUserById(userId))
 			.title(request.title())
 			.postcardUrl(request.postCard())
-			.nagativity(Nagativity.valueOf(analyze.negativeImpact()))
+			.negativity(Negativity.valueOf(analyze.negativeImpact()))
 			.build()).getId(), analyze);
 	}
 
