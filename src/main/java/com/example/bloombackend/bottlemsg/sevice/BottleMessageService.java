@@ -2,6 +2,7 @@ package com.example.bloombackend.bottlemsg.sevice;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -31,6 +32,7 @@ import com.example.bloombackend.bottlemsg.entity.ReactionType;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageLogRepository;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageReactionRepository;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageRepository;
+import com.example.bloombackend.claude.dto.EmotionScore;
 import com.example.bloombackend.claude.dto.SentimentAnalysisDto;
 import com.example.bloombackend.claude.service.ClaudeService;
 import com.example.bloombackend.user.entity.UserEntity;
@@ -57,7 +59,7 @@ public class BottleMessageService {
 
 	@Transactional
 	public CreateBottleMessageResponse createBottleMessage(Long userId, CreateBottleMessageRequest request) {
-		SentimentAnalysisDto analyze = analysisMessage(request.content());
+		SentimentAnalysisDto analyze = analysisMessage(createAIPrompt(request.content()));
 		return CreateBottleMessageResponse.of(bottleMessageRepository.save(BottleMessageEntity.builder()
 			.content(request.content())
 			.user(userService.findUserById(userId))
@@ -67,8 +69,33 @@ public class BottleMessageService {
 			.build()).getId(), analyze);
 	}
 
+	private String createAIPrompt(String content) {
+		return String.format(AnalyzeMessagePrompt.ANALYZE_MESSAGE_PROMPT, content);
+	}
+
 	private SentimentAnalysisDto analysisMessage(String content) {
-		return claudeService.callClaudeForSentimentAnalysis(content);
+		String response = claudeService.callClaudeForSentimentAnalysis(content);
+		return parseSentimentString(response);
+	}
+
+	public SentimentAnalysisDto parseSentimentString(String input) {
+		List<EmotionScore> emotions = new ArrayList<>();
+
+		String[] lines = input.split("\n");
+
+		for (int i = 2; i < 5; i++) {
+			String line = lines[i].trim();
+			if (line.contains("|")) {
+				String[] columns = line.split("\\|");
+				if (columns.length >= 3) {
+					EmotionScore score = new EmotionScore(columns[1].trim(), Integer.parseInt(columns[2].trim()));
+					emotions.add(score);
+				}
+			}
+		}
+
+		String negativeImpactLine = lines[lines.length - 1].replace("|", "").trim();
+		return new SentimentAnalysisDto(emotions, negativeImpactLine);
 	}
 
 	@Transactional
