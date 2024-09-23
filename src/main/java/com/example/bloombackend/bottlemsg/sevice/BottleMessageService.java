@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,12 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.bloombackend.bottlemsg.controller.dto.request.CreateBottleMessageReactionRequest;
 import com.example.bloombackend.bottlemsg.controller.dto.request.CreateBottleMessageRequest;
-import com.example.bloombackend.bottlemsg.controller.dto.response.BottleMessageLogResponse;
+import com.example.bloombackend.bottlemsg.controller.dto.response.BottleMessageDetailResponse;
 import com.example.bloombackend.bottlemsg.controller.dto.response.BottleMessageReactionResponse;
-import com.example.bloombackend.bottlemsg.controller.dto.response.BottleMessageWithDateLogResponse;
-import com.example.bloombackend.bottlemsg.controller.dto.response.BottleMessageWithReactionResponse;
 import com.example.bloombackend.bottlemsg.controller.dto.response.CreateBottleMessageResponse;
-import com.example.bloombackend.bottlemsg.controller.dto.response.UserBottleMessagesResponse;
+import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMessageLogInfo;
+import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMessageSummaryInfo;
+import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMessageWithDateLogInfo;
+import com.example.bloombackend.bottlemsg.controller.dto.response.ReceivedBottleMessagesResponse;
+import com.example.bloombackend.bottlemsg.controller.dto.response.SentBottleMessageResponse;
 import com.example.bloombackend.bottlemsg.entity.BottleMessageEntity;
 import com.example.bloombackend.bottlemsg.entity.BottleMessageReaction;
 import com.example.bloombackend.bottlemsg.entity.BottleMessageReceiptLog;
@@ -70,19 +71,10 @@ public class BottleMessageService {
 	}
 
 	@Transactional
-	public BottleMessageWithReactionResponse getRandomBottleMessage(Long userId) {
+	public BottleMessageDetailResponse getRandomBottleMessage(Long userId) {
 		BottleMessageEntity message = findRandomUnreceivedMessage(userId);
 		createBottleMessageReceiptLog(userId, message);
-		return getBottleMessage(message.getId(), userId);
-	}
-
-	private boolean isReacted(Long userId) {
-		return bottleMessageReactionRepository.findByReactorId(userId).isPresent();
-	}
-
-	private void createBottleMessageReceiptLog(Long userId, BottleMessageEntity message) {
-		bottleMessageLogRepository.save(
-			BottleMessageReceiptLog.builder().recipient(userService.findUserById(userId)).message(message).build());
+		return getDetailBottleMessage(message.getId(), userId);
 	}
 
 	private BottleMessageEntity findRandomUnreceivedMessage(Long userId) {
@@ -90,40 +82,54 @@ public class BottleMessageService {
 		return unreceivedMessages.get(new Random().nextInt(unreceivedMessages.size()));
 	}
 
-	private BottleMessageReactionResponse getReactionCount(Long messageId, boolean isReacted) {
-		Map<ReactionType, Long> reactionsCountMap = bottleMessageReactionRepository.countReactionsByMessage(messageId);
-
-		int likeCount = reactionsCountMap.getOrDefault(ReactionType.LIKE, 0L).intValue();
-		int empathyCount = reactionsCountMap.getOrDefault(ReactionType.EMPATHY, 0L).intValue();
-		int cheerCount = reactionsCountMap.getOrDefault(ReactionType.CHEER, 0L).intValue();
-
-		return new BottleMessageReactionResponse(isReacted, likeCount, empathyCount, cheerCount);
+	private void createBottleMessageReceiptLog(Long userId, BottleMessageEntity message) {
+		bottleMessageLogRepository.save(
+			BottleMessageReceiptLog.builder().recipient(userService.findUserById(userId)).message(message).build());
 	}
 
 	@Transactional(readOnly = true)
-	public UserBottleMessagesResponse getUserBottleMessages(Long userId) {
+	public ReceivedBottleMessagesResponse getReceivedBottleMessages(Long userId) {
 		List<BottleMessageEntity> savedMessages = bottleMessageRepository.findSavedMessagesByUserId(userId);
-		return getBottleMessages(savedMessages, userId);
+		return getReceivedMessageResponse(savedMessages, userId);
 	}
 
-	@Transactional(readOnly = true)
-	public BottleMessageWithReactionResponse getBottleMessage(Long messageId, Long userId) {
-		BottleMessageEntity message = getBottleMessageEntity(messageId);
-		BottleMessageReactionResponse reaction = getReactionCount(messageId, isReacted(userId));
-		return new BottleMessageWithReactionResponse(message.toDto(), reaction);
+	@Transactional
+	public ReceivedBottleMessagesResponse deleteBottleMessage(Long userId, Long messageId) {
+		Optional<BottleMessageReceiptLog> message = bottleMessageLogRepository.findByMessageIdAndRecipient(
+			messageId, userService.findUserById(userId));
+
+		if (message.isPresent()) {
+			message.get().delete();
+		}
+
+		return getReceivedBottleMessages(userId);
 	}
 
-	private BottleMessageLogResponse getDateLog(Long messageId, Long userId) {
+	private ReceivedBottleMessagesResponse getReceivedMessageResponse(List<BottleMessageEntity> bottleMessageEntities,
+		Long userId) {
+		return new ReceivedBottleMessagesResponse(bottleMessageEntities.stream()
+			.map(savedMessage -> {
+					BottleMessageLogInfo log = getDateLog(savedMessage.getId(), userId);
+					BottleMessageSummaryInfo messageInfo = savedMessage.toSummaryInfo();
+					return new BottleMessageWithDateLogInfo(log, messageInfo);
+				}
+			)
+			.toList());
+	}
+
+	private BottleMessageLogInfo getDateLog(Long messageId, Long userId) {
 		BottleMessageReceiptLog log = bottleMessageLogRepository.findByMessageIdAndRecipient(messageId,
 			userService.findUserById(userId)).get();
 		BottleMessageEntity message = getBottleMessageEntity(messageId);
-		return new BottleMessageLogResponse(localDateToString(log.getReceivedAt(), "yyyy-MM-dd HH:mm:ss"),
+		return new BottleMessageLogInfo(localDateToString(log.getReceivedAt(), "yyyy-MM-dd HH:mm:ss"),
 			localDateToString(message.getCreatedAt(), "yyyy-MM-dd HH:mm:ss"));
 	}
 
-	private String localDateToString(LocalDateTime date, String format) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-		return date.format(formatter);
+	@Transactional(readOnly = true)
+	public BottleMessageDetailResponse getDetailBottleMessage(Long messageId, Long userId) {
+		BottleMessageEntity message = getBottleMessageEntity(messageId);
+		BottleMessageReactionResponse reaction = getReactionCount(messageId, isReacted(userId));
+		return new BottleMessageDetailResponse(message.toDetailInfo(), reaction);
 	}
 
 	@Transactional
@@ -139,42 +145,45 @@ public class BottleMessageService {
 		return getReactionCount(messageId, isReacted(userId));
 	}
 
-	@Transactional
-	public UserBottleMessagesResponse deleteBottleMessage(Long userId, Long messageId) {
-		Optional<BottleMessageReceiptLog> message = bottleMessageLogRepository.findByMessageIdAndRecipient(
-			messageId, userService.findUserById(userId));
+	private BottleMessageReactionResponse getReactionCount(Long messageId, boolean isReacted) {
+		Map<ReactionType, Long> reactionsCountMap = bottleMessageReactionRepository.countReactionsByMessage(messageId);
 
-		if (message.isPresent()) {
-			message.get().delete();
-		}
+		int likeCount = reactionsCountMap.getOrDefault(ReactionType.LIKE, 0L).intValue();
+		int empathyCount = reactionsCountMap.getOrDefault(ReactionType.EMPATHY, 0L).intValue();
+		int cheerCount = reactionsCountMap.getOrDefault(ReactionType.CHEER, 0L).intValue();
 
-		return getUserBottleMessages(userId);
+		return new BottleMessageReactionResponse(isReacted, likeCount, empathyCount, cheerCount);
 	}
 
-	private BottleMessageEntity getBottleMessageEntity(Long messageId) {
-		return bottleMessageRepository.findById(messageId)
-			.orElseThrow(() -> new NoSuchElementException("Message with ID " + messageId + " not found."));
+	private boolean isReacted(Long userId) {
+		return bottleMessageReactionRepository.findByReactorId(userId).isPresent();
+	}
+
+	private String localDateToString(LocalDateTime date, String format) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+		return date.format(formatter);
 	}
 
 	@Transactional(readOnly = true)
-	public UserBottleMessagesResponse getSentBottleMessages(Long userId) {
+	public SentBottleMessageResponse getSentBottleMessages(Long userId) {
 		List<BottleMessageEntity> sentMessages = bottleMessageRepository.findBySenderId(userId);
-		return getBottleMessages(sentMessages, userId);
+		return getSentMessagesResponse(sentMessages);
 	}
 
-	private UserBottleMessagesResponse getBottleMessages(List<BottleMessageEntity> bottleMessageEntities, Long userId) {
-		return new UserBottleMessagesResponse(bottleMessageEntities.stream()
-			.map(savedMessage -> {
-					BottleMessageLogResponse log = getDateLog(savedMessage.getId(), userId);
-					return BottleMessageWithDateLogResponse.of(log, savedMessage.toDto());
-				}
-			)
-			.collect(Collectors.toList()));
+	private SentBottleMessageResponse getSentMessagesResponse(List<BottleMessageEntity> bottleMessageEntities) {
+		return new SentBottleMessageResponse(bottleMessageEntities.stream()
+			.map(BottleMessageEntity::toSummaryInfo)
+			.toList());
 	}
 
 	@Transactional
 	public void deleteBottleMessageReaction(Long messageId, Long userId, String reactionType) {
 		bottleMessageReactionRepository.deleteByMessageIdAndReactorAndReactionType(messageId,
 			userService.findUserById(userId), ReactionType.valueOf(reactionType));
+	}
+
+	private BottleMessageEntity getBottleMessageEntity(Long messageId) {
+		return bottleMessageRepository.findById(messageId)
+			.orElseThrow(() -> new NoSuchElementException("Message with ID " + messageId + " not found."));
 	}
 }

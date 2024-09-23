@@ -1,9 +1,9 @@
-package com.example.bloombackend.bottlemsg.controller.dto.response;
+package com.example.bloombackend.bottlemsg.controller.dto.response.Info;
 
 import lombok.Builder;
 
 @Builder
-public record BottleMessageResponse(
+public record BottleMessageInfo(
 	Long messageId,
 	String title,
 	String content,

@@ -4,7 +4,8 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.example.bloombackend.bottlemsg.controller.dto.response.BottleMessageResponse;
+import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMessageInfo;
+import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMessageSummaryInfo;
 import com.example.bloombackend.user.entity.UserEntity;
 
 import jakarta.persistence.Column;
@@ -65,10 +66,19 @@ public class BottleMessageEntity {
 		this.negativity = negativity;
 	}
 
-	public BottleMessageResponse toDto() {
-		return BottleMessageResponse.builder()
+	public BottleMessageInfo toDetailInfo() {
+		return BottleMessageInfo.builder()
 			.messageId(id)
 			.content(content)
+			.title(title)
+			.postCardUrl(postcardUrl)
+			.negativity(negativity.name())
+			.build();
+	}
+
+	public BottleMessageSummaryInfo toSummaryInfo() {
+		return BottleMessageSummaryInfo.builder()
+			.messageId(id)
 			.title(title)
 			.postCardUrl(postcardUrl)
 			.negativity(negativity.name())
