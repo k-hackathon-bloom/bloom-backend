@@ -156,7 +156,7 @@ include::{snippets}/api-bottle-message-test/get-recent-send-time/http-response.a
 
 ==== response body
 
-include::{snippets}/api-bottle-message-test/get-recent-send-time/request-fields.adoc[]
+include::{snippets}/api-bottle-message-test/get-recent-send-time/response-fields.adoc[]
 
 
 
