@@ -2,7 +2,7 @@ package com.example.bloombackend.bottlemsg.controller.dto.response;
 
 import java.util.List;
 
-import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMessageSummaryInfo;
+import com.example.bloombackend.bottlemsg.controller.dto.response.Info.SentBottleMessageInfo;
 
-public record SentBottleMessageResponse(List<BottleMessageSummaryInfo> messages) {
+public record SentBottleMessageResponse(List<SentBottleMessageInfo> messages) {
 }

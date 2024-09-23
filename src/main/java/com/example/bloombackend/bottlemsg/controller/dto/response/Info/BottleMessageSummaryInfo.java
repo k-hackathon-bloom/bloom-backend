@@ -7,5 +7,6 @@ public record BottleMessageSummaryInfo(
 	Long messageId,
 	String title,
 	String postCardUrl,
-	String negativity) {
+	String negativity
+) {
 }

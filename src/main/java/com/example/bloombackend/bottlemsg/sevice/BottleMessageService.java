@@ -19,6 +19,7 @@ import com.example.bloombackend.bottlemsg.controller.dto.response.CreateBottleMe
 import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMessageLogInfo;
 import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMessageSummaryInfo;
 import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMessageWithDateLogInfo;
+import com.example.bloombackend.bottlemsg.controller.dto.response.Info.SentBottleMessageInfo;
 import com.example.bloombackend.bottlemsg.controller.dto.response.ReceivedBottleMessagesResponse;
 import com.example.bloombackend.bottlemsg.controller.dto.response.SentBottleMessageResponse;
 import com.example.bloombackend.bottlemsg.entity.BottleMessageEntity;
@@ -171,7 +172,10 @@ public class BottleMessageService {
 
 	private SentBottleMessageResponse getSentMessagesResponse(List<BottleMessageEntity> bottleMessageEntities) {
 		return new SentBottleMessageResponse(bottleMessageEntities.stream()
-			.map(BottleMessageEntity::toSummaryInfo)
+			.map(entity ->
+				new SentBottleMessageInfo(localDateToString(entity.getCreatedAt(), "yyyy-MM-dd"),
+					entity.toSummaryInfo())
+			)
 			.toList());
 	}
 
