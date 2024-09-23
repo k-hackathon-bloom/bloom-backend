@@ -22,8 +22,9 @@ public class DailyAchievementRepositoryImpl implements DailyAchievementRepositor
         QDailyAchievementEntity dailyAchievement = QDailyAchievementEntity.dailyAchievementEntity;
 
         LocalDate now = LocalDate.now();
-        LocalDateTime startOfSixthMonth = now.minusMonths(5).withDayOfMonth(1).atStartOfDay();
-        LocalDateTime endOfCurrentMonth = now.withDayOfMonth(now.lengthOfMonth()).atTime(23, 59, 59);
+        LocalDateTime startOfSixthMonth = now.minusMonths(6).withDayOfMonth(1).atStartOfDay();
+        LocalDate lastMonth = now.minusMonths(1);
+        LocalDateTime endOfLastMonth = lastMonth.withDayOfMonth(lastMonth.lengthOfMonth()).atTime(LocalTime.MAX);
 
         return queryFactory
                 .select(Projections.constructor(
@@ -34,7 +35,7 @@ public class DailyAchievementRepositoryImpl implements DailyAchievementRepositor
                 .from(dailyAchievement)
                 .where(
                         dailyAchievement.user.id.eq(userId),
-                        dailyAchievement.createdAt.between(startOfSixthMonth, endOfCurrentMonth)
+                        dailyAchievement.createdAt.between(startOfSixthMonth, endOfLastMonth)
                 )
                 .groupBy(dailyAchievement.createdAt.yearMonth())
                 .fetch();
