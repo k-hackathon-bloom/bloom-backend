@@ -57,8 +57,8 @@ public class BottleMessageEntity {
 	private LocalDateTime createdAt;
 
 	@Builder
-	public BottleMessageEntity(UserEntity user, String content, String title, String postcardUrl, Negativity negativity,
-		LocalDateTime sentAt) {
+	public BottleMessageEntity(UserEntity user, String content, String title, String postcardUrl,
+		Negativity negativity) {
 		this.sender = user;
 		this.content = content;
 		this.title = title;

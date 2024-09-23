@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,7 +78,7 @@ public class BottleMessageService {
 
 	private BottleMessageEntity findRandomUnreceivedMessage(Long userId) {
 		List<BottleMessageEntity> unreceivedMessages = bottleMessageRepository.findUnreceivedMessagesByUserId(userId);
-		return unreceivedMessages.get(new Random().nextInt(unreceivedMessages.size()));
+		return unreceivedMessages.get(0);
 	}
 
 	private void createBottleMessageReceiptLog(Long userId, BottleMessageEntity message) {
@@ -128,7 +127,7 @@ public class BottleMessageService {
 	@Transactional(readOnly = true)
 	public BottleMessageDetailResponse getDetailBottleMessage(Long messageId, Long userId) {
 		BottleMessageEntity message = getBottleMessageEntity(messageId);
-		BottleMessageReactionResponse reaction = getReactionCount(messageId, isReacted(userId));
+		BottleMessageReactionResponse reaction = getReactionCount(messageId, isReacted(userId, messageId));
 		return new BottleMessageDetailResponse(message.toDetailInfo(), reaction);
 	}
 
@@ -142,7 +141,7 @@ public class BottleMessageService {
 				.message(getBottleMessageEntity(messageId))
 				.reactionType(ReactionType.valueOf(request.reaction()))
 				.build());
-		return getReactionCount(messageId, isReacted(userId));
+		return getReactionCount(messageId, isReacted(userId, messageId));
 	}
 
 	private BottleMessageReactionResponse getReactionCount(Long messageId, boolean isReacted) {
@@ -155,8 +154,8 @@ public class BottleMessageService {
 		return new BottleMessageReactionResponse(isReacted, likeCount, empathyCount, cheerCount);
 	}
 
-	private boolean isReacted(Long userId) {
-		return bottleMessageReactionRepository.findByReactorId(userId).isPresent();
+	private boolean isReacted(Long userId, Long messageId) {
+		return bottleMessageReactionRepository.findByReactorIdAndMessageId(userId, messageId).isPresent();
 	}
 
 	private String localDateToString(LocalDateTime date, String format) {
