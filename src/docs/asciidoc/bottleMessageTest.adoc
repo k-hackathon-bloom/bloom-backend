@@ -148,7 +148,7 @@ include::{snippets}/api-bottle-message-test/delete-bottle-messages-reaction/http
 
 ==== HTTP request
 
-include::{snippets}/api-bottle-message-test/get-recent-send-time/request-body.adoc[]
+include::{snippets}/api-bottle-message-test/get-recent-send-time/http-request.adoc[]
 
 ==== HTTP response
 
