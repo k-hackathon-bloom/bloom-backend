@@ -21,6 +21,7 @@ import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMes
 import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMessageWithDateLogInfo;
 import com.example.bloombackend.bottlemsg.controller.dto.response.Info.SentBottleMessageInfo;
 import com.example.bloombackend.bottlemsg.controller.dto.response.ReceivedBottleMessagesResponse;
+import com.example.bloombackend.bottlemsg.controller.dto.response.RecentSentAtResponse;
 import com.example.bloombackend.bottlemsg.controller.dto.response.SentBottleMessageResponse;
 import com.example.bloombackend.bottlemsg.entity.BottleMessageEntity;
 import com.example.bloombackend.bottlemsg.entity.BottleMessageReaction;
@@ -188,5 +189,16 @@ public class BottleMessageService {
 	private BottleMessageEntity getBottleMessageEntity(Long messageId) {
 		return bottleMessageRepository.findById(messageId)
 			.orElseThrow(() -> new NoSuchElementException("Message with ID " + messageId + " not found."));
+	}
+
+	public RecentSentAtResponse getRecentSentTime(Long userId) {
+		Optional<BottleMessageEntity> recentMessage = bottleMessageRepository.findTopBySenderIdOrderByCreatedAtDesc(
+			userId);
+		if (recentMessage.isPresent()) {
+			String recentSentAt = localDateToString(recentMessage.get().getCreatedAt(), "yyyy-MM-dd HH:mm:ss");
+			return new RecentSentAtResponse(recentSentAt);
+		} else {
+			return new RecentSentAtResponse("작성한 글이 없습니다.");
+		}
 	}
 }
