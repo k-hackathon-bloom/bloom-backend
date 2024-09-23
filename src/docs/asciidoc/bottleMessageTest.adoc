@@ -144,6 +144,19 @@ include::{snippets}/api-bottle-message-test/delete-bottle-messages-reaction/requ
 
 include::{snippets}/api-bottle-message-test/delete-bottle-messages-reaction/http-response.adoc[]
 
+=== 9. 유리병 메시지 최근 전송 시간 조회
+
+==== HTTP request
+
+include::{snippets}/api-bottle-message-test/get-recent-send-time/request-body.adoc[]
+
+==== HTTP response
+
+include::{snippets}/api-bottle-message-test/get-recent-send-time/http-response.adoc[]
+
+==== response body
+
+include::{snippets}/api-bottle-message-test/get-recent-send-time/request-fields.adoc[]
 
 
 

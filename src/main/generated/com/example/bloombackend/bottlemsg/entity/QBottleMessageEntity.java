@@ -28,7 +28,7 @@ public class QBottleMessageEntity extends EntityPathBase<BottleMessageEntity> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final EnumPath<Nagativity> nagativity = createEnum("nagativity", Nagativity.class);
+    public final EnumPath<Negativity> negativity = createEnum("negativity", Negativity.class);
 
     public final StringPath postcardUrl = createString("postcardUrl");
 

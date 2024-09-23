@@ -15,6 +15,7 @@ import com.example.bloombackend.bottlemsg.controller.dto.response.BottleMessageD
 import com.example.bloombackend.bottlemsg.controller.dto.response.BottleMessageReactionResponse;
 import com.example.bloombackend.bottlemsg.controller.dto.response.CreateBottleMessageResponse;
 import com.example.bloombackend.bottlemsg.controller.dto.response.ReceivedBottleMessagesResponse;
+import com.example.bloombackend.bottlemsg.controller.dto.response.RecentSentAtResponse;
 import com.example.bloombackend.bottlemsg.controller.dto.response.SentBottleMessageResponse;
 import com.example.bloombackend.bottlemsg.sevice.BottleMessageService;
 import com.example.bloombackend.global.config.annotation.CurrentUser;
@@ -42,7 +43,7 @@ public class BottleMessageController {
 
 	@GetMapping("/{messageId}")
 	public ResponseEntity<BottleMessageDetailResponse> getDetailBottleMessage(@CurrentUser Long userId,
-		@PathVariable Long messageId) {
+		@PathVariable("messageId") Long messageId) {
 		return ResponseEntity.ok(bottleMessageService.getDetailBottleMessage(messageId, userId));
 	}
 
@@ -55,14 +56,14 @@ public class BottleMessageController {
 	public ResponseEntity<BottleMessageReactionResponse> reactBottleMessage(
 		@CurrentUser Long userId,
 		@RequestBody CreateBottleMessageReactionRequest request,
-		@PathVariable Long messageId) {
+		@PathVariable("messageId") Long messageId) {
 		return ResponseEntity.ok(bottleMessageService.updateBottleMessageReaction(messageId, userId, request));
 	}
 
 	@PostMapping("/{messageId}/delete")
 	public ResponseEntity<ReceivedBottleMessagesResponse> deleteBottleMessage(
 		@CurrentUser Long userId,
-		@PathVariable Long messageId) {
+		@PathVariable("messageId") Long messageId) {
 		return ResponseEntity.ok(bottleMessageService.deleteBottleMessage(userId, messageId));
 	}
 
@@ -74,10 +75,17 @@ public class BottleMessageController {
 	@DeleteMapping("/{messageId}/react")
 	public ResponseEntity<Void> deleteBottleMessageReaction(
 		@CurrentUser Long userId,
-		@PathVariable Long messageId,
+		@PathVariable("messageId") Long messageId,
 		@RequestBody CreateBottleMessageReactionRequest request
 	) {
 		bottleMessageService.deleteBottleMessageReaction(messageId, userId, request.reaction());
 		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping("/recent-send-time")
+	public ResponseEntity<RecentSentAtResponse> getRecentSendTime(
+		@CurrentUser Long userId
+	) {
+		return ResponseEntity.ok(bottleMessageService.getRecentSendTime(userId));
 	}
 }

@@ -25,7 +25,7 @@ import com.example.bloombackend.bottlemsg.controller.dto.request.CreateBottleMes
 import com.example.bloombackend.bottlemsg.entity.BottleMessageEntity;
 import com.example.bloombackend.bottlemsg.entity.BottleMessageReaction;
 import com.example.bloombackend.bottlemsg.entity.BottleMessageReceiptLog;
-import com.example.bloombackend.bottlemsg.entity.Nagativity;
+import com.example.bloombackend.bottlemsg.entity.Negativity;
 import com.example.bloombackend.bottlemsg.entity.ReactionType;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageLogRepository;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageRepository;
@@ -87,7 +87,7 @@ public class BottleMessageRestDocsTest {
 				.content("오늘은 금요일 내일은 토요일")
 				.postcardUrl(
 					"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg")
-				.nagativity(Nagativity.LOWER)
+				.negativity(Negativity.LOWER)
 				.build()
 		);
 		bottleMessage2 = bottleMessageRepository.save(
@@ -97,7 +97,7 @@ public class BottleMessageRestDocsTest {
 				.content("모두 모두 화이팅")
 				.postcardUrl(
 					"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg")
-				.nagativity(Nagativity.LOWER)
+				.negativity(Negativity.LOWER)
 				.build()
 		);
 	}
@@ -157,10 +157,11 @@ public class BottleMessageRestDocsTest {
 					fieldWithPath("bottleMessageResponses[].log").description("유리병 메시지 수발신 로그 정보"),
 					fieldWithPath("bottleMessageResponses[].log.receivedAt").description("수신일시"),
 					fieldWithPath("bottleMessageResponses[].log.sentAt").description("발신일시"),
-					fieldWithPath("bottleMessageResponses[].messageId").description("유리병 메시지 아이디"),
-					fieldWithPath("bottleMessageResponses[].title").description("유리병 메시지 제목"),
-					fieldWithPath("bottleMessageResponses[].postCardUrl").description("유리병 메시지 편지지 url"),
-					fieldWithPath("bottleMessageResponses[].negativity").description("유리병 메시지 위험도")
+					fieldWithPath("bottleMessageResponses[].messages").description("메시지 정보"),
+					fieldWithPath("bottleMessageResponses[].messages.messageId").description("유리병 메시지 아이디"),
+					fieldWithPath("bottleMessageResponses[].messages.title").description("유리병 메시지 제목"),
+					fieldWithPath("bottleMessageResponses[].messages.postCardUrl").description("유리병 메시지 편지지 url"),
+					fieldWithPath("bottleMessageResponses[].messages.negativity").description("유리병 메시지 위험도")
 				)
 			));
 	}
@@ -274,10 +275,11 @@ public class BottleMessageRestDocsTest {
 					fieldWithPath("bottleMessageResponses[].log").description("유리병 메시지 수발신 로그 정보"),
 					fieldWithPath("bottleMessageResponses[].log.receivedAt").description("수신일시"),
 					fieldWithPath("bottleMessageResponses[].log.sentAt").description("발신일시"),
-					fieldWithPath("bottleMessageResponses[].messageId").description("유리병 메시지 아이디"),
-					fieldWithPath("bottleMessageResponses[].title").description("유리병 메시지 제목"),
-					fieldWithPath("bottleMessageResponses[].postCardUrl").description("유리병 메시지 편지지 url"),
-					fieldWithPath("bottleMessageResponses[].negativity").description("유리병 메시지 위험도")
+					fieldWithPath("bottleMessageResponses[].messages").description("메시지 정보"),
+					fieldWithPath("bottleMessageResponses[].messages.messageId").description("유리병 메시지 아이디"),
+					fieldWithPath("bottleMessageResponses[].messages.title").description("유리병 메시지 제목"),
+					fieldWithPath("bottleMessageResponses[].messages.postCardUrl").description("유리병 메시지 편지지 url"),
+					fieldWithPath("bottleMessageResponses[].messages.negativity").description("유리병 메시지 위험도")
 				)
 			));
 	}
@@ -292,7 +294,7 @@ public class BottleMessageRestDocsTest {
 			.content("오늘은 금요일 내일은 토요일")
 			.postcardUrl(
 				"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg")
-			.nagativity(Nagativity.LOWER)
+			.negativity(Negativity.LOWER)
 			.build();
 		bottleMessage2 = BottleMessageEntity.builder()
 			.user(testUser)
@@ -300,7 +302,7 @@ public class BottleMessageRestDocsTest {
 			.content("힘들다")
 			.postcardUrl(
 				"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg")
-			.nagativity(Nagativity.UPPER)
+			.negativity(Negativity.UPPER)
 			.build();
 		bottleMessageRepository.saveAll(List.of(bottleMessage1, bottleMessage2));
 
@@ -311,14 +313,12 @@ public class BottleMessageRestDocsTest {
 			.andExpect(status().isOk())
 			.andDo(document("api-bottle-message-test/get-sent-bottle-messages",
 				responseFields(
-					fieldWithPath("bottleMessageResponses[]").description("유리병 메시지 목록"),
-					fieldWithPath("bottleMessageResponses[].log").description("유리병 메시지 수발신 로그 정보"),
-					fieldWithPath("bottleMessageResponses[].log.receivedAt").description("수신일시"),
-					fieldWithPath("bottleMessageResponses[].log.sentAt").description("발신일시"),
-					fieldWithPath("bottleMessageResponses[].messageId").description("유리병 메시지 아이디"),
-					fieldWithPath("bottleMessageResponses[].title").description("유리병 메시지 제목"),
-					fieldWithPath("bottleMessageResponses[].postCardUrl").description("유리병 메시지 편지지 url"),
-					fieldWithPath("bottleMessageResponses[].negativity").description("유리병 메시지 위험도")
+					fieldWithPath("messages[]").description("유리병 메시지 목록"),
+					fieldWithPath("messages[].sentAt").description("보낸 시간"),
+					fieldWithPath("messages[].message.messageId").description("유리병 메시지 아이디"),
+					fieldWithPath("messages[].message.title").description("유리병 메시지 제목"),
+					fieldWithPath("messages[].message.postCardUrl").description("유리병 메시지 편지지"),
+					fieldWithPath("messages[].message.negativity").description("유리병 메시지 위험도")
 				)
 			));
 	}
@@ -350,4 +350,30 @@ public class BottleMessageRestDocsTest {
 				)
 			));
 	}
+
+	@Test
+	@DisplayName("API - 최근 유리병 메시지를 보낸 시간")
+	void getRecentSendTime() throws Exception {
+		//given
+		bottleMessageRepository.save(BottleMessageEntity.builder()
+			.user(testUser)
+			.title("내일은 또 다른날")
+			.content("오늘은 금요일 내일은 토요일")
+			.postcardUrl(
+				"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg")
+			.negativity(Negativity.LOWER)
+			.build());
+
+		//when & then
+		mockMvc.perform(get("/api/bottle-messages/recent-send-time", bottleMessage1.getId())
+				.header("Authorization", mockToken)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andDo(document("api-bottle-message-test/get-recent-send-time",
+				responseFields(
+					fieldWithPath("sentAt").description("최근 전송한 시간")
+				)
+			));
+	}
+
 }

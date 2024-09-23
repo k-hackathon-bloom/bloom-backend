@@ -568,6 +568,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_6_보낸_유리병_메시지_목록_조회">6. 보낸 유리병 메시지 목록 조회</a></li>
 <li><a href="#_7_유리병_메시지_반응_등록">7. 유리병 메시지 반응 등록</a></li>
 <li><a href="#_8_유리병_메시지_반응_삭제">8. 유리병 메시지 반응 삭제</a></li>
+<li><a href="#_9_유리병_메시지_최근_전송_시간_조회">9. 유리병 메시지 최근 전송 시간 조회</a></li>
 </ul>
 </li>
 </ul>
@@ -633,9 +634,9 @@ Host: localhost:8080
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 180
+Content-Length: 179
 
-{"id":75,"analysis":{"emotions":[{"emotion":"만족감","percentage":80},{"emotion":"성취감","percentage":75},{"emotion":"자부심","percentage":70}],"negativeImpact":"LOWER"}}</code></pre>
+{"id":5,"analysis":{"emotions":[{"emotion":"만족감","percentage":80},{"emotion":"성취감","percentage":75},{"emotion":"자부심","percentage":70}],"negativeImpact":"LOWER"}}</code></pre>
 </div>
 </div>
 </div>
@@ -708,9 +709,9 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 316
+Content-Length: 458
 
-{"message":{"messageId":90,"title":"내일은 또 다른날","content":"오늘은 금요일 내일은 토요일","postCardUrl":"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg","negativity":"LOWER"},"reaction":{"isReacted":false,"like":0,"empathy":0,"cheer":0}}</code></pre>
+{"message":{"messageId":1,"title":"작은 한 걸음이 큰 변화를 만듭니다!","content":"비록 지금은 느리게 가는 것처럼 보여도, 그 작은 한 걸음 한 걸음이 결국 큰 변화를 만들 것입니다. 끝까지 함께 갑시다!","postCardUrl":"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024.jpg","negativity":"LOWER"},"reaction":{"isReacted":false,"like":0,"empathy":0,"cheer":0}}</code></pre>
 </div>
 </div>
 </div>
@@ -808,9 +809,9 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 557
+Content-Length: 583
 
-{"bottleMessageResponses":[{"log":{"receivedAt":"2024-09-23 01:59:13","sentAt":"2024-09-23 01:59:13"},"messageId":88,"title":"내일은 또 다른날","postCardUrl":"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg","negativity":"LOWER"},{"log":{"receivedAt":"2024-09-23 01:59:13","sentAt":"2024-09-23 01:59:13"},"messageId":89,"title":"모두모두 화이팅","postCardUrl":"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg","negativity":"LOWER"}]}</code></pre>
+{"bottleMessageResponses":[{"log":{"receivedAt":"2024-09-24 00:31:22","sentAt":"2024-09-24 00:31:22"},"messages":{"messageId":21,"title":"내일은 또 다른날","postCardUrl":"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg","negativity":"LOWER"}},{"log":{"receivedAt":"2024-09-24 00:31:22","sentAt":"2024-09-24 00:31:22"},"messages":{"messageId":22,"title":"모두모두 화이팅","postCardUrl":"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg","negativity":"LOWER"}}]}</code></pre>
 </div>
 </div>
 </div>
@@ -851,22 +852,27 @@ Content-Length: 557
 <td class="tableblock halign-left valign-top"><p class="tableblock">발신일시</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].messageId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].messages</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">메시지 정보</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].messages.messageId</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유리병 메시지 아이디</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].title</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].messages.title</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유리병 메시지 제목</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].postCardUrl</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].messages.postCardUrl</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유리병 메시지 편지지 url</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].negativity</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].messages.negativity</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유리병 메시지 위험도</p></td>
 </tr>
@@ -880,7 +886,7 @@ Content-Length: 557
 <h4 id="_http_request_4"><a class="link" href="#_http_request_4">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/bottle-messages/80 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/bottle-messages/10 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Authorization: jwtToken
 Host: localhost:8080</code></pre>
@@ -916,7 +922,7 @@ Host: localhost:8080</code></pre>
 Content-Type: application/json
 Content-Length: 316
 
-{"message":{"messageId":80,"title":"내일은 또 다른날","content":"오늘은 금요일 내일은 토요일","postCardUrl":"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg","negativity":"LOWER"},"reaction":{"isReacted":false,"like":0,"empathy":0,"cheer":0}}</code></pre>
+{"message":{"messageId":10,"title":"내일은 또 다른날","content":"오늘은 금요일 내일은 토요일","postCardUrl":"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg","negativity":"LOWER"},"reaction":{"isReacted":false,"like":0,"empathy":0,"cheer":0}}</code></pre>
 </div>
 </div>
 </div>
@@ -1001,7 +1007,7 @@ Content-Length: 316
 <h4 id="_http_request_5"><a class="link" href="#_http_request_5">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/bottle-messages/84/delete HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/bottle-messages/17/delete HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Authorization: jwtToken
 Host: localhost:8080</code></pre>
@@ -1035,9 +1041,9 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 292
+Content-Length: 305
 
-{"bottleMessageResponses":[{"log":{"receivedAt":"2024-09-23 01:59:13","sentAt":"2024-09-23 01:59:13"},"messageId":85,"title":"모두모두 화이팅","postCardUrl":"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg","negativity":"LOWER"}]}</code></pre>
+{"bottleMessageResponses":[{"log":{"receivedAt":"2024-09-24 00:31:22","sentAt":"2024-09-24 00:31:22"},"messages":{"messageId":18,"title":"모두모두 화이팅","postCardUrl":"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg","negativity":"LOWER"}}]}</code></pre>
 </div>
 </div>
 </div>
@@ -1078,22 +1084,27 @@ Content-Length: 292
 <td class="tableblock halign-left valign-top"><p class="tableblock">발신일시</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].messageId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].messages</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">메시지 정보</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].messages.messageId</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유리병 메시지 아이디</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].title</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].messages.title</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유리병 메시지 제목</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].postCardUrl</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].messages.postCardUrl</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유리병 메시지 편지지 url</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].negativity</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].messages.negativity</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유리병 메시지 위험도</p></td>
 </tr>
@@ -1120,9 +1131,9 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 571
+Content-Length: 461
 
-{"bottleMessageResponses":[{"log":{"receivedAt":"never received the message","sentAt":"2024-09-23 01:59:12"},"messageId":78,"title":"내일은 또 다른날","postCardUrl":"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg","negativity":"LOWER"},{"log":{"receivedAt":"never received the message","sentAt":"2024-09-23 01:59:12"},"messageId":79,"title":"다 죽어버렸으면","postCardUrl":"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg","negativity":"UPPER"}]}</code></pre>
+{"messages":[{"sentAt":"2024-09-24","message":{"messageId":8,"title":"내일은 또 다른날","postCardUrl":"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg","negativity":"LOWER"}},{"sentAt":"2024-09-24","message":{"messageId":9,"title":"다 죽어버렸으면","postCardUrl":"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg","negativity":"UPPER"}}]}</code></pre>
 </div>
 </div>
 </div>
@@ -1143,42 +1154,32 @@ Content-Length: 571
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>messages[]</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유리병 메시지 목록</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].log</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">유리병 메시지 수발신 로그 정보</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].log.receivedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>messages[].sentAt</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">수신일시</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">보낸 시간</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].log.sentAt</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">발신일시</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].messageId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>messages[].message.messageId</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유리병 메시지 아이디</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].title</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>messages[].message.title</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유리병 메시지 제목</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].postCardUrl</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>messages[].message.postCardUrl</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">유리병 메시지 편지지 url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">유리병 메시지 편지지</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bottleMessageResponses[].negativity</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>messages[].message.negativity</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">유리병 메시지 위험도</p></td>
 </tr>
@@ -1192,7 +1193,7 @@ Content-Length: 571
 <h4 id="_http_request_7"><a class="link" href="#_http_request_7">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/bottle-messages/86/react HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/bottle-messages/19/react HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Authorization: jwtToken
 Content-Length: 19
@@ -1242,7 +1243,7 @@ Host: localhost:8080
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>reaction</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">등록할 반응 (LIKE,CHEER,EMPATHY</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">등록할 반응 (LIKE,CHEER,EMPATHY)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1305,7 +1306,7 @@ Content-Length: 49
 <h4 id="_http_request_8"><a class="link" href="#_http_request_8">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/bottle-messages/82/react HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/bottle-messages/12/react HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Authorization: jwtToken
 Content-Length: 19
@@ -1318,7 +1319,6 @@ Host: localhost:8080
 <div class="sect3">
 <h4 id="_path_parameter_4"><a class="link" href="#_path_parameter_4">path parameter</a></h4>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. /api/bottle-messages/{messageId}/react</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1356,7 +1356,7 @@ Host: localhost:8080
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>reaction</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">삭제할 반응(LIKE,EMPATHY,CHEER</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">삭제할 반응(LIKE,EMPATHY,CHEER)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1370,12 +1370,39 @@ Host: localhost:8080
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_9_유리병_메시지_최근_전송_시간_조회"><a class="link" href="#_9_유리병_메시지_최근_전송_시간_조회">9. 유리병 메시지 최근 전송 시간 조회</a></h3>
+<div class="sect3">
+<h4 id="_http_request_9"><a class="link" href="#_http_request_9">HTTP request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_http_response_9"><a class="link" href="#_http_response_9">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 32
+
+{"sentAt":"2024-09-24 00:31:22"}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_response_body_8"><a class="link" href="#_response_body_8">response body</a></h4>
+
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-09-23 02:01:24 +0900
+Last updated 2024-09-24 00:32:50 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

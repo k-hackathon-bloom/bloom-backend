@@ -191,7 +191,8 @@ public class BottleMessageService {
 			.orElseThrow(() -> new NoSuchElementException("Message with ID " + messageId + " not found."));
 	}
 
-	public RecentSentAtResponse getRecentSentTime(Long userId) {
+	@Transactional(readOnly = true)
+	public RecentSentAtResponse getRecentSendTime(Long userId) {
 		Optional<BottleMessageEntity> recentMessage = bottleMessageRepository.findTopBySenderIdOrderByCreatedAtDesc(
 			userId);
 		if (recentMessage.isPresent()) {
