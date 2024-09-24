@@ -17,6 +17,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -36,6 +37,7 @@ public class BottleMessageReceiptLog {
 	@JoinColumn(name = "recipient_id", nullable = false)
 	private UserEntity recipient;
 
+	@Getter
 	@CreationTimestamp
 	@Column(name = "received_at")
 	private LocalDateTime receivedAt;
@@ -47,7 +49,6 @@ public class BottleMessageReceiptLog {
 	public BottleMessageReceiptLog(BottleMessageEntity message, UserEntity recipient) {
 		this.message = message;
 		this.recipient = recipient;
-		this.isSaved = true;
 	}
 
 	public void delete() {
