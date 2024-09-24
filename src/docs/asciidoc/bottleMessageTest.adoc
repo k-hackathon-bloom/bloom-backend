@@ -160,5 +160,3 @@ include::{snippets}/api-bottle-message-test/get-recent-send-time/response-fields
 
 
 
-
-
