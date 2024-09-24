@@ -4,7 +4,8 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.example.bloombackend.bottlemsg.controller.dto.response.BottleMessageResponse;
+import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMessageInfo;
+import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMessageSummaryInfo;
 import com.example.bloombackend.user.entity.UserEntity;
 
 import jakarta.persistence.Column;
@@ -48,7 +49,7 @@ public class BottleMessageEntity {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "negativity")
-	private Nagativity nagativity;
+	private Negativity negativity;
 
 	@Getter
 	@CreationTimestamp
@@ -56,22 +57,31 @@ public class BottleMessageEntity {
 	private LocalDateTime createdAt;
 
 	@Builder
-	public BottleMessageEntity(UserEntity user, String content, String title, String postcardUrl, Nagativity nagativity,
-		LocalDateTime sentAt) {
+	public BottleMessageEntity(UserEntity user, String content, String title, String postcardUrl,
+		Negativity negativity) {
 		this.sender = user;
 		this.content = content;
 		this.title = title;
 		this.postcardUrl = postcardUrl;
-		this.nagativity = nagativity;
+		this.negativity = negativity;
 	}
 
-	public BottleMessageResponse toDto() {
-		return BottleMessageResponse.builder()
+	public BottleMessageInfo toDetailInfo() {
+		return BottleMessageInfo.builder()
 			.messageId(id)
 			.content(content)
 			.title(title)
 			.postCardUrl(postcardUrl)
-			.negativity(nagativity.name())
+			.negativity(negativity.name())
+			.build();
+	}
+
+	public BottleMessageSummaryInfo toSummaryInfo() {
+		return BottleMessageSummaryInfo.builder()
+			.messageId(id)
+			.title(title)
+			.postCardUrl(postcardUrl)
+			.negativity(negativity.name())
 			.build();
 	}
 }

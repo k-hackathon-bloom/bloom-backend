@@ -5,9 +5,13 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.example.bloombackend.bottlemsg.entity.BottleMessageEntity;
-import com.example.bloombackend.bottlemsg.entity.Nagativity;
+import com.example.bloombackend.bottlemsg.entity.Negativity;
 import com.example.bloombackend.bottlemsg.entity.QBottleMessageEntity;
 import com.example.bloombackend.bottlemsg.entity.QBottleMessageReceiptLog;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Repository
@@ -21,17 +25,16 @@ public class BottleMessageRepositoryImpl implements BottleMessageRepositoryCusto
 	@Override
 	public List<BottleMessageEntity> findUnreceivedMessagesByUserId(Long userId) {
 		QBottleMessageEntity bottleMessage = QBottleMessageEntity.bottleMessageEntity;
-		QBottleMessageReceiptLog receiptLog = QBottleMessageReceiptLog.bottleMessageReceiptLog;
 
 		return queryFactory
 			.selectFrom(bottleMessage)
-			.where(bottleMessage.id.notIn(
-					queryFactory.select(receiptLog.message.id)
-						.from(receiptLog)
-						.where(receiptLog.recipient.id.eq(userId))
-				), bottleMessage.sender.id.ne(userId),
-				bottleMessage.nagativity.eq(Nagativity.valueOf("LOWER"))
-			)// 부정적 영향 여부 필터링
+			.where(
+				isNotReceived(userId),
+				isNotSentByUser(userId),
+				hasNegativityLevel(Negativity.LOWER)
+			)
+			.orderBy(randomOrder())
+			.limit(10)
 			.fetch();
 	}
 
@@ -49,5 +52,29 @@ public class BottleMessageRepositoryImpl implements BottleMessageRepositoryCusto
 						.and(receiptLog.isSaved.eq(true)))
 			))
 			.fetch();
+	}
+
+	private BooleanExpression isNotReceived(Long userId) {
+		QBottleMessageReceiptLog receiptLog = QBottleMessageReceiptLog.bottleMessageReceiptLog;
+		QBottleMessageEntity bottleMessage = QBottleMessageEntity.bottleMessageEntity;
+		return bottleMessage.id.notIn(
+			JPAExpressions.select(receiptLog.message.id)
+				.from(receiptLog)
+				.where(receiptLog.recipient.id.eq(userId))
+		);
+	}
+
+	private BooleanExpression isNotSentByUser(Long userId) {
+		QBottleMessageEntity bottleMessage = QBottleMessageEntity.bottleMessageEntity;
+		return bottleMessage.sender.id.ne(userId);
+	}
+
+	private BooleanExpression hasNegativityLevel(Negativity level) {
+		QBottleMessageEntity bottleMessage = QBottleMessageEntity.bottleMessageEntity;
+		return bottleMessage.negativity.eq(level);
+	}
+
+	private OrderSpecifier<Double> randomOrder() {
+		return Expressions.numberTemplate(Double.class, "function('RAND')").asc();
 	}
 }
