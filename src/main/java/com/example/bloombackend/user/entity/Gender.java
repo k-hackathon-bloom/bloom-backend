@@ -12,4 +12,8 @@ public enum Gender {
 	public String getLabel() {
 		return label;
 	}
+
+	public static Gender getGenderByLabel(String label) {
+		return Gender.valueOf(label);
+	}
 }
