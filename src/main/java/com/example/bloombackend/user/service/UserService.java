@@ -48,7 +48,12 @@ public class UserService {
 	public UserInfoResponse registerUserInfo(Long userId, UserRegisterInfoRequest request) {
 		UserEntity user = findUserById(userId);
 		user.updateUserSurveyInfo(request.nickname(), Age.valueOf(request.age()),
-			Gender.getGenderByLabel(request.gender()), request.isSurvey());
+			Gender.valueOf(request.gender()), request.isSurvey());
 		return user.getUserInfo();
+	}
+
+	@Transactional(readOnly = true)
+	public UserInfoResponse getUserInfo(Long userId) {
+		return findUserById(userId).getUserInfo();
 	}
 }
