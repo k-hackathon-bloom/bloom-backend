@@ -69,6 +69,7 @@ public class BottleMessageRestDocsTest {
 	private BottleMessageEntity bottleMessage1;
 
 	private BottleMessageEntity bottleMessage2;
+
 	@Autowired
 	private ParameterNamesModule parameterNamesModule;
 

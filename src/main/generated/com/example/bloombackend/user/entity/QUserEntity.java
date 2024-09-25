@@ -19,7 +19,7 @@ public class QUserEntity extends EntityPathBase<UserEntity> {
 
     public static final QUserEntity userEntity = new QUserEntity("userEntity");
 
-    public final NumberPath<Integer> age = createNumber("age", Integer.class);
+    public final EnumPath<Age> age = createEnum("age", Age.class);
 
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
 
@@ -28,6 +28,8 @@ public class QUserEntity extends EntityPathBase<UserEntity> {
     public final EnumPath<Gender> gender = createEnum("gender", Gender.class);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
+
+    public final BooleanPath isSurvey = createBoolean("isSurvey");
 
     public final StringPath name = createString("name");
 

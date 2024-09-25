@@ -1,0 +1,41 @@
+= API 문서
+BloomBackend Team
+2024-08-27
+:toc: left
+:toclevels: 2
+:source-highlighter: highlightjs
+:sectlinks:
+
+== 유저 API
+
+=== 1. 유저 정보 업데이트
+
+==== HTTP request
+
+include::{snippets}/api-user-test/update-info/http-request.adoc[]
+
+==== request body
+
+include::{snippets}/api-user-test/update-info/request-body.adoc[]
+
+==== HTTP response
+
+include::{snippets}/api-user-test/update-info/http-response.adoc[]
+
+==== response body
+
+include::{snippets}/api-user-test/update-info/response-fields.adoc[]
+
+=== 2. 유저 정보 조회
+
+==== HTTP request
+
+include::{snippets}/api-user-test/get-info/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/api-user-test/get-info/http-response.adoc[]
+
+==== response body
+
+include::{snippets}/api-user-test/get-info/response-fields.adoc[]
