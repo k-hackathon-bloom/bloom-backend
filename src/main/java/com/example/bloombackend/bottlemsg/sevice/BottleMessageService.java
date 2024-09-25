@@ -123,8 +123,8 @@ public class BottleMessageService {
 
 	@Transactional
 	public ReceivedBottleMessagesResponse deleteBottleMessage(Long userId, Long messageId) {
-		Optional<BottleMessageReceiptLog> message = bottleMessageLogRepository.findByMessageIdAndRecipient(
-			messageId, userService.findUserById(userId));
+		Optional<BottleMessageReceiptLog> message = bottleMessageLogRepository.findByMessageIdAndRecipientId(
+			messageId, userId);
 
 		if (message.isPresent()) {
 			message.get().delete();
@@ -146,8 +146,8 @@ public class BottleMessageService {
 	}
 
 	private BottleMessageLogInfo getDateLog(Long messageId, Long userId) {
-		BottleMessageReceiptLog log = bottleMessageLogRepository.findByMessageIdAndRecipient(messageId,
-			userService.findUserById(userId)).get();
+		BottleMessageReceiptLog log = bottleMessageLogRepository.findByMessageIdAndRecipientId(messageId,
+			userId).get();
 		BottleMessageEntity message = getBottleMessageEntity(messageId);
 		return new BottleMessageLogInfo(localDateToString(log.getReceivedAt(), "yyyy-MM-dd HH:mm:ss"),
 			localDateToString(message.getCreatedAt(), "yyyy-MM-dd HH:mm:ss"));
