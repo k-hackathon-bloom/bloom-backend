@@ -130,7 +130,7 @@ public class AchievementService {
     }
 
     private String createAIPrompt(String monthlyData, double averageBloomed) {
-        return String.format(AchievementAIPrompt.ACHIEVEMENT_SUMMARY_PROMPT, monthlyData, averageBloomed);
+        return String.format(AchievementAIPrompt.ACHIEVEMENT_SUMMARY_PROMPT, monthlyData, Math.round(averageBloomed));
     }
 
     @Transactional(readOnly = true)
