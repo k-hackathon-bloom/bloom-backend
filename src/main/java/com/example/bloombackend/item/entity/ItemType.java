@@ -1,4 +1,4 @@
-package com.example.bloombackend.store.entity;
+package com.example.bloombackend.item.entity;
 
 public enum ItemType {
 	SEED("씨앗"), SEASON("시즌"), BUTTON("단추"), THEME("테마");
