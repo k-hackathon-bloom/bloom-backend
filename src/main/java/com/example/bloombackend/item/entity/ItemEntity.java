@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -37,4 +38,13 @@ public class ItemEntity {
 
 	@Column(name = "is_sale")
 	private Boolean isSale;
+
+	@Builder
+	public ItemEntity(ItemType type, String name, Integer price, String imgUrl, Boolean isSale) {
+		this.type = type;
+		this.name = name;
+		this.price = price;
+		this.imgUrl = imgUrl;
+		this.isSale = isSale;
+	}
 }

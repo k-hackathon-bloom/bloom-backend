@@ -1,0 +1,23 @@
+= API 문서
+BloomBackend Team
+2024-08-27
+:toc: left
+:toclevels: 2
+:source-highlighter: highlightjs
+:sectlinks:
+
+== 아이템 API
+
+=== 1. 유저 정보 업데이트
+
+==== HTTP request
+
+include::{snippets}/api-item-test/get-items/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/api-item-test/get-items/http-response.adoc[]
+
+==== response body
+
+include::{snippets}/api-item-test/get-items/response-fields.adoc[]
