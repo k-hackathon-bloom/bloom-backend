@@ -11,6 +11,8 @@ import com.example.bloombackend.item.repository.ItemRepository;
 
 @Service
 public class ItemService {
+	private static final boolean IS_ON_SALE = true;
+
 	private final ItemRepository itemRepository;
 
 	public ItemService(ItemRepository itemRepository) {
@@ -18,9 +20,9 @@ public class ItemService {
 	}
 
 	public ItemsResponse getItems() {
-		List<ItemEntity> itmes = itemRepository.findByIsSale(true);
+		List<ItemEntity> items = itemRepository.findByIsSale(IS_ON_SALE);
 		return new ItemsResponse(
-			itmes.stream()
+			items.stream()
 				.map(ItemInfo::from)
 				.toList()
 		);
