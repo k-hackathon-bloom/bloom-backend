@@ -19,8 +19,8 @@ public class ItemService {
 		this.itemRepository = itemRepository;
 	}
 
-	public ItemsResponse getItems() {
-		List<ItemEntity> items = itemRepository.findByIsSale(IS_ON_SALE);
+	public ItemsResponse getOnSaleItems() {
+		List<ItemEntity> items = itemRepository.findOnSaleItems();
 		return new ItemsResponse(
 			items.stream()
 				.map(ItemInfo::from)

@@ -19,6 +19,6 @@ public class ItemController {
 
 	@GetMapping("/sale")
 	public ResponseEntity<ItemsResponse> getItems() {
-		return ResponseEntity.ok(itemService.getItems());
+		return ResponseEntity.ok(itemService.getOnSaleItems());
 	}
 }
