@@ -8,7 +8,7 @@ BloomBackend Team
 
 == 아이템 API
 
-=== 1. 유저 정보 업데이트
+=== 1. 구매가능한 아이템 목록 조회
 
 ==== HTTP request
 

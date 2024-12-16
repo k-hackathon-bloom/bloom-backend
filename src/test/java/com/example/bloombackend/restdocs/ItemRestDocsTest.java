@@ -3,8 +3,12 @@ package com.example.bloombackend.restdocs;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,9 +22,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.bloombackend.global.config.JwtTokenProvider;
-import com.example.bloombackend.item.entity.ItemEntity;
-import com.example.bloombackend.item.entity.ItemType;
+import com.example.bloombackend.item.entity.items.SeedEntity;
 import com.example.bloombackend.item.repository.ItemRepository;
+import com.example.bloombackend.item.repository.SeedRepository;
 import com.example.bloombackend.oauth.OAuthProvider;
 import com.example.bloombackend.user.entity.UserEntity;
 import com.example.bloombackend.user.repository.UserRepository;
@@ -40,6 +44,9 @@ public class ItemRestDocsTest {
 	private ItemRepository itemRepository;
 
 	@Autowired
+	private SeedRepository seedRepository;
+
+	@Autowired
 	private UserRepository userRepository;
 
 	@SpyBean
@@ -51,9 +58,8 @@ public class ItemRestDocsTest {
 
 	private ObjectMapper objectMapper;
 
-	private ItemEntity item1;
-	private ItemEntity item2;
-	private ItemEntity limitItem;
+	private SeedEntity rose;
+	private SeedEntity limitFlower;
 
 	@BeforeEach
 	void setUp() {
@@ -62,34 +68,29 @@ public class ItemRestDocsTest {
 		testUser = userRepository.save(new UserEntity(OAuthProvider.KAKAO, "testUser", "testId"));
 		doReturn(testUser.getId()).when(jwtTokenProvider).getUserIdFromToken(mockToken);
 
-		item1 = itemRepository.save(
-			ItemEntity.builder()
-				.type(ItemType.SEED)
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String limitDate = "2025-01-01";
+
+		rose = seedRepository.save(
+			SeedEntity.builder()
 				.name("장미 씨앗")
-				.imgUrl("http://...")
-				.price(300)
-				.isSale(true)
-				.build()
+				.endDate(LocalDate.of(9999, 12, 31))
+				.isDefault(false)
+				.thumbnailImgUrl("썸네일이미지")
+				.smallIconUrl("./resources/static/flower-icons/rose-small.svg")
+				.bigIconUrl("./resources/static/flower-icons/rose.svg")
+				.price(300).build()
 		);
 
-		item2 = itemRepository.save(
-			ItemEntity.builder()
-				.type(ItemType.SEED)
-				.name("프리지아 씨앗")
-				.imgUrl("http://...")
-				.price(350)
-				.isSale(true)
-				.build()
-		);
-
-		limitItem = itemRepository.save(
-			ItemEntity.builder()
-				.type(ItemType.SEASON)
-				.name("프리지아 씨앗")
-				.imgUrl("http://...")
-				.price(550)
-				.isSale(false)
-				.build()
+		limitFlower = seedRepository.save(
+			SeedEntity.builder()
+				.name("시즌한정 씨앗")
+				.endDate(LocalDate.parse(limitDate, formatter))
+				.isDefault(false)
+				.thumbnailImgUrl("썸네일이미지")
+				.smallIconUrl("./resources/static/flower-icons/freesia-small.svg")
+				.bigIconUrl("./resources/static/flower-icons/freesia.svg")
+				.price(300).build()
 		);
 
 	}
@@ -102,13 +103,18 @@ public class ItemRestDocsTest {
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andDo(document("api-item-test/get-items",
+				preprocessResponse(prettyPrint()),
 				responseFields(
 					fieldWithPath("items[]").description("판매 중인 아이템 목록"),
 					fieldWithPath("items[].id").description("아이템 ID"),
 					fieldWithPath("items[].name").description("아이템 이름"),
 					fieldWithPath("items[].price").description("아이템 가격"),
-					fieldWithPath("items[].imgUrl").description("아이템 이미지 URL"),
-					fieldWithPath("items[].type").description("아이템 유형")
+					fieldWithPath("items[].thumbnailUrl").description("아이템 구매용 이미지 URL"),
+					fieldWithPath("items[].type").description("아이템 유형"),
+					fieldWithPath("items[].endDate").description(
+						"판매 마감일 +" + "\n" +
+							"- 시즌 한정 아이템의 경우, 실제 마감일이 표시됩니다. +" + "\n" +
+							"- 지속 판매 아이템의 경우, \"9999-12-31\"로 고정됩니다.")
 				)
 			));
 	}

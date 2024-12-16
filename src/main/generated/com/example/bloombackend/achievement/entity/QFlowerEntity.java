@@ -10,7 +10,7 @@ import com.querydsl.core.types.Path;
 
 
 /**
- * QFlowerEntity is a Querydsl query type for FlowerEntity
+ * QFlowerEntity is a Querydsl query type for SeedEntity
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QFlowerEntity extends EntityPathBase<FlowerEntity> {
