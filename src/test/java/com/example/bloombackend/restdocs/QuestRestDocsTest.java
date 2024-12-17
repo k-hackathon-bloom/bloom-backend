@@ -1,6 +1,6 @@
 package com.example.bloombackend.restdocs;
 
-import com.example.bloombackend.global.config.JwtTokenProvider;
+import com.example.bloombackend.oauth.util.JwtTokenProvider;
 import com.example.bloombackend.oauth.OAuthProvider;
 import com.example.bloombackend.quest.controller.dto.request.QuestRegisterRequest;
 import com.example.bloombackend.quest.entity.QuestEntity;

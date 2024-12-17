@@ -7,7 +7,7 @@ import com.example.bloombackend.achievement.entity.FlowerEntity;
 import com.example.bloombackend.achievement.repository.DailyAchievementRepository;
 import com.example.bloombackend.achievement.repository.FlowerRepository;
 import com.example.bloombackend.global.AIUtil;
-import com.example.bloombackend.global.config.JwtTokenProvider;
+import com.example.bloombackend.oauth.util.JwtTokenProvider;
 import com.example.bloombackend.oauth.OAuthProvider;
 import com.example.bloombackend.user.entity.UserEntity;
 import com.example.bloombackend.user.repository.UserRepository;

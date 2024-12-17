@@ -5,7 +5,7 @@ import com.example.bloombackend.dailyquestion.entity.DailyQuestionEntity;
 import com.example.bloombackend.dailyquestion.entity.DailyQuestionLogEntity;
 import com.example.bloombackend.dailyquestion.repository.DailyQuestionLogRepository;
 import com.example.bloombackend.dailyquestion.repository.DailyQuestionRepository;
-import com.example.bloombackend.global.config.JwtTokenProvider;
+import com.example.bloombackend.oauth.util.JwtTokenProvider;
 import com.example.bloombackend.oauth.OAuthProvider;
 import com.example.bloombackend.user.entity.UserEntity;
 import com.example.bloombackend.user.repository.UserRepository;
