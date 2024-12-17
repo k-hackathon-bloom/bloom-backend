@@ -47,7 +47,8 @@ public class JwtTokenProvider {
 
     public String refreshAccessToken(String refreshToken) {
         validateRefreshToken(refreshToken);
-        return createAccessToken(getUserIdFromToken(refreshToken));
+        String userId = String.valueOf(getUserIdFromToken(refreshToken));
+        return createAccessToken(userId);
     }
 
     private String createToken(String userId, long validSeconds, TokenType tokenType) {
@@ -108,8 +109,8 @@ public class JwtTokenProvider {
         return sha256Hex(token);
     }
 
-    public String getUserIdFromToken(String token) {
+    public Long getUserIdFromToken(String token) {
         Claims claims = parseToken(token);
-        return claims.getSubject();
+        return Long.parseLong(claims.getSubject());
     }
 }
