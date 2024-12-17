@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -69,6 +70,7 @@ public class QuestRestDocsTest {
         objectMapper = new ObjectMapper();
         mockToken = "jwtToken";
         testUser = userRepository.save(new UserEntity(OAuthProvider.KAKAO, "testUser", "testId"));
+        doNothing().when(jwtTokenProvider).validateAccessToken(mockToken);
         doReturn(testUser.getId()).when(jwtTokenProvider).getUserIdFromToken(mockToken);
         questEntity1 = questRepository.save(new QuestEntity("https://test.com/icon1.png", "물 마시기", 10));
         questEntity2 = questRepository.save(new QuestEntity("https://test.com/icon2.png", "산책 하기", 1));

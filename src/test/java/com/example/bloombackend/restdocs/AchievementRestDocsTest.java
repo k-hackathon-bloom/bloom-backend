@@ -28,6 +28,7 @@ import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -73,6 +74,7 @@ public class AchievementRestDocsTest {
         objectMapper = new ObjectMapper();
         mockToken = "jwtToken";
         testUser = userRepository.save(new UserEntity(OAuthProvider.KAKAO, "testUser", "testId"));
+        doNothing().when(jwtTokenProvider).validateAccessToken(mockToken);
         doReturn(testUser.getId()).when(jwtTokenProvider).getUserIdFromToken(mockToken);
 
         // 외부 API 호출의 경우 테스트 시 Mocking 처리

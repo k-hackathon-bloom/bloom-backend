@@ -55,6 +55,7 @@ public class UserRestDocsTest {
 		// 사용자 생성 및 토큰 처리 모킹
 		mockToken = "jwtToken";
 		testUser = userRepository.save(new UserEntity(OAuthProvider.KAKAO, "testUser", "testId"));
+		doNothing().when(jwtTokenProvider).validateAccessToken(mockToken);
 		doReturn(testUser.getId()).when(jwtTokenProvider).getUserIdFromToken(mockToken);
 	}
 

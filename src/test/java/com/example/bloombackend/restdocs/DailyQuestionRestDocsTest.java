@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.lang.reflect.Field;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -68,6 +69,7 @@ public class DailyQuestionRestDocsTest {
         // 사용자 생성 및 토큰 처리 모킹
         mockToken = "jwtToken";
         testUser = userRepository.save(new UserEntity(OAuthProvider.KAKAO, "testUser", "testId"));
+        doNothing().when(jwtTokenProvider).validateAccessToken(mockToken);
         doReturn(testUser.getId()).when(jwtTokenProvider).getUserIdFromToken(mockToken);
 
         // 오늘의 질문 1,2 저장
