@@ -125,7 +125,7 @@ public class AuthRestDocsTest {
     }
 
     @Test
-    @DisplayName("API - 로그아웃된 Refresh 토큰으로 Access 토큰 재발급 시도 시 예외 발생")
+    @DisplayName("Exception - 로그아웃된 Refresh 토큰으로 Access 토큰 재발급 시도 시 예외 발생")
     void refreshAccessTokenWithLoggedOutTokenTest() throws Exception {
         String refreshToken = jwtTokenProvider.createRefreshToken("3");
         LogoutList logoutList = new LogoutList(
@@ -152,7 +152,50 @@ public class AuthRestDocsTest {
     }
 
     @Test
-    @DisplayName("API - 유효하지 않은 Access 토큰으로 유저 정보 조회 시 예외 발생")
+    @DisplayName("Exception - 만료된 refresh 토큰으로 Access 토큰 재발급 시도 시 예외 발생")
+    void refreshAccessTokenWithExpiredRefreshTokenTest() throws Exception {
+        String expiredToken = createExpiredToken();
+        RefreshRequest request = new RefreshRequest(expiredToken);
+
+        mockMvc.perform(get("/api/auth/refresh")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .header(HttpHeaders.AUTHORIZATION, expiredToken))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.errorCode").value(TokenError.EXPIRED_REFRESH_TOKEN.getDevelopCode()))
+                .andExpect(jsonPath("$.message").value(TokenError.EXPIRED_REFRESH_TOKEN.getMessage()))
+                .andDo(document("api-auth-test/expired-refresh-token",
+                        responseFields(
+                                fieldWithPath("errorCode").description(TokenError.EXPIRED_REFRESH_TOKEN.getDevelopCode()),
+                                fieldWithPath("message").description(TokenError.EXPIRED_REFRESH_TOKEN.getMessage())
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("Exception - 유효하지 않은 Refresh 토큰으로 Access 토큰 재발급 시도 시 예외 발생")
+    void refreshAccessTokenWithInvalidRefreshTokenTest() throws Exception {
+        String invalidToken = "잘못된.토큰.값";
+        RefreshRequest request = new RefreshRequest(invalidToken);
+
+        mockMvc.perform(get("/api/auth/refresh")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .header(HttpHeaders.AUTHORIZATION, invalidToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(TokenError.INVALID_REFRESH_TOKEN.getDevelopCode()))
+                .andExpect(jsonPath("$.message").value(TokenError.INVALID_REFRESH_TOKEN.getMessage()))
+                .andDo(document("api-auth-test/invalid-refresh-token",
+                        responseFields(
+                                fieldWithPath("errorCode").description(TokenError.INVALID_REFRESH_TOKEN.getDevelopCode()),
+                                fieldWithPath("message").description(TokenError.INVALID_REFRESH_TOKEN.getMessage())
+                        )
+                ));
+
+    }
+
+            @Test
+    @DisplayName("Exception - 유효하지 않은 Access 토큰으로 유저 정보 조회 시 예외 발생")
     void getUserInfoWithInvalidTokenTest() throws Exception {
         String invalidToken = "잘못된.토큰.값";
 
@@ -171,7 +214,7 @@ public class AuthRestDocsTest {
     }
 
     @Test
-    @DisplayName("API - 만료된 Access 토큰으로 유저 정보 조회 시 예외 발생")
+    @DisplayName("Exception - 만료된 Access 토큰으로 유저 정보 조회 시 예외 발생")
     void getUserInfoWithExpiredTokenTest() throws Exception {
         String expiredToken = createExpiredToken();
 

@@ -83,7 +83,35 @@ include::{snippets}/api-auth-test/logged-out-token/http-response.adoc[]
 ==== response body
 include::{snippets}/api-auth-test/logged-out-token/response-fields.adoc[]
 
-=== 6. 유효하지 않은 Access 토큰으로 유저 정보 조회 시 예외
+=== 6. 만료된 Refresh 토큰으로 Access 토큰 재발급 시도 시 예외
+
+==== 설명
+만료된 Refresh 토큰을 사용하여 Access 토큰 재발급을 시도할 경우 예외 응답을 반환합니다.
+
+==== HTTP request
+include::{snippets}/api-auth-test/expired-refresh-token/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/api-auth-test/expired-refresh-token/http-response.adoc[]
+
+==== response body
+include::{snippets}/api-auth-test/expired-refresh-token/response-fields.adoc[]
+
+=== 7. 유효하지 않은 Refresh 토큰으로 Access 토큰 재발급 시도 시 예외
+
+==== 설명
+유효하지 않은 Refresh 토큰을 사용하여 Access 토큰 재발급을 시도할 경우 예외 응답을 반환합니다.
+
+==== HTTP request
+include::{snippets}/api-auth-test/invalid-refresh-token/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/api-auth-test/invalid-refresh-token/http-response.adoc[]
+
+==== response body
+include::{snippets}/api-auth-test/invalid-refresh-token/response-fields.adoc[]
+
+=== 8. 유효하지 않은 Access 토큰으로 유저 정보 조회 시 예외
 
 ==== 설명
 유효하지 않은 Access 토큰으로 유저 정보 조회 시 예외 응답을 반환합니다.
@@ -97,7 +125,7 @@ include::{snippets}/api-auth-test/invalid-token/http-response.adoc[]
 ==== response body
 include::{snippets}/api-auth-test/invalid-token/response-fields.adoc[]
 
-=== 7. 만료된 Access 토큰으로 유저 정보 조회 시 예외
+=== 9. 만료된 Access 토큰으로 유저 정보 조회 시 예외
 
 ==== 설명
 만료된 Access 토큰으로 유저 정보 조회 시 예외 응답을 반환합니다.
