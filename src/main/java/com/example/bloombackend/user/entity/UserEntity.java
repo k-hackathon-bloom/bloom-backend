@@ -6,7 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.example.bloombackend.oauth.OAuthProvider;
-import com.example.bloombackend.user.controller.dto.response.UserInfoResponse;
+import com.example.bloombackend.user.controller.dto.response.info.UserInfo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -75,8 +75,8 @@ public class UserEntity {
 		this.isSurvey = true;
 	}
 
-	public UserInfoResponse getUserInfo() {
-		return new UserInfoResponse(name, age.toString(), gender.toString(), isSurvey);
+	public UserInfo getUserInfo() {
+		return new UserInfo(name, age.toString(), gender.toString(), isSurvey);
 	}
 
 	public Long getId() {
