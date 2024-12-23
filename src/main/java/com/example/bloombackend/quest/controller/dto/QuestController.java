@@ -5,6 +5,7 @@ import com.example.bloombackend.quest.controller.dto.request.QuestRegisterReques
 import com.example.bloombackend.quest.controller.dto.response.AvailableQuestsResponse;
 import com.example.bloombackend.quest.controller.dto.response.RegisteredQuestsResponse;
 import com.example.bloombackend.quest.service.QuestService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,5 +44,10 @@ public class QuestController {
     public ResponseEntity<Void> unregisterQuest(@CurrentUser Long userId, @PathVariable Long questId) {
         questService.unregisterQuest(userId, questId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/recommend")
+    public ResponseEntity<QuestRecommendResponse> recommendQuests(@CurrentUser Long userId) throws JsonProcessingException {
+        return ResponseEntity.ok(questService.recommendQuests(userId));
     }
 }

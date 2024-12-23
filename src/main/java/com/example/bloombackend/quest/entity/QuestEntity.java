@@ -1,6 +1,7 @@
 package com.example.bloombackend.quest.entity;
 
 import com.example.bloombackend.quest.controller.dto.response.QuestResponse;
+import com.example.bloombackend.quest.service.prompt.QuestForPrompt;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -30,5 +31,9 @@ public class QuestEntity {
 
     public QuestResponse toDto() {
         return new QuestResponse(id, iconUrl, title, maxCount);
+    }
+
+    public QuestForPrompt toPromptData() {
+        return new QuestForPrompt(id, title, maxCount);
     }
 }
