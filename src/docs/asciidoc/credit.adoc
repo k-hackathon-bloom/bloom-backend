@@ -1,0 +1,27 @@
+= API 문서
+BloomBackend Team
+2024-08-27
+:toc: left
+:toclevels: 2
+:source-highlighter: highlightjs
+:sectlinks:
+
+== 크레딧 API
+
+=== 1. 아이템 구매 api
+
+==== HTTP request
+
+include::{snippets}/api-credit-test/purchase/http-request.adoc[]
+
+==== request body
+
+include::{snippets}/api-credit-test/purchase/request-fields.adoc[]
+
+==== HTTP response
+
+include::{snippets}/api-credit-test/purchase/http-response.adoc[]
+
+==== response body
+
+include::{snippets}/api-credit-test/purchase/response-fields.adoc[]

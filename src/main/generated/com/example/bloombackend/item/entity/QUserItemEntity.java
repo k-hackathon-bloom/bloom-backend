@@ -26,7 +26,7 @@ public class QUserItemEntity extends EntityPathBase<UserItemEntity> {
 
     public final QItemEntity item;
 
-    public final com.example.bloombackend.user.entity.QUserEntity user;
+    public final NumberPath<Long> userId = createNumber("userId", Long.class);
 
     public QUserItemEntity(String variable) {
         this(UserItemEntity.class, forVariable(variable), INITS);
@@ -47,7 +47,6 @@ public class QUserItemEntity extends EntityPathBase<UserItemEntity> {
     public QUserItemEntity(Class<? extends UserItemEntity> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.item = inits.isInitialized("item") ? new QItemEntity(forProperty("item")) : null;
-        this.user = inits.isInitialized("user") ? new com.example.bloombackend.user.entity.QUserEntity(forProperty("user")) : null;
     }
 
 }

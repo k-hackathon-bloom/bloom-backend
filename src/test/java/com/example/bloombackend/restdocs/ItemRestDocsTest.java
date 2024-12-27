@@ -21,13 +21,14 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.example.bloombackend.credit.entity.CreditType;
+import com.example.bloombackend.credit.entity.UserCreditEntity;
+import com.example.bloombackend.credit.repository.UserCreditRepository;
 import com.example.bloombackend.global.config.JwtTokenProvider;
 import com.example.bloombackend.item.entity.UserItemEntity;
 import com.example.bloombackend.item.entity.items.SeedEntity;
-import com.example.bloombackend.item.repository.ItemRepository;
 import com.example.bloombackend.item.repository.SeedRepository;
 import com.example.bloombackend.item.repository.UserItemRepository;
-import com.example.bloombackend.item.service.ItemService;
 import com.example.bloombackend.oauth.OAuthProvider;
 import com.example.bloombackend.user.entity.UserEntity;
 import com.example.bloombackend.user.repository.UserRepository;
@@ -44,12 +45,6 @@ public class ItemRestDocsTest {
 	private MockMvc mockMvc;
 
 	@Autowired
-	private ItemRepository itemRepository;
-
-	@Autowired
-	private ItemService itemService;
-
-	@Autowired
 	private SeedRepository seedRepository;
 
 	@Autowired
@@ -57,6 +52,9 @@ public class ItemRestDocsTest {
 
 	@Autowired
 	private UserItemRepository userItemRepository;
+
+	@Autowired
+	private UserCreditRepository userCreditRepository;
 
 	@SpyBean
 	private JwtTokenProvider jwtTokenProvider;
@@ -75,6 +73,10 @@ public class ItemRestDocsTest {
 
 	private UserItemEntity userItem;
 
+	private UserCreditEntity button;
+
+	private UserCreditEntity cash;
+
 	@BeforeEach
 	void setUp() {
 		objectMapper = new ObjectMapper();
@@ -84,6 +86,22 @@ public class ItemRestDocsTest {
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		String limitDate = "2025-01-01";
+
+		button = userCreditRepository.save(
+			UserCreditEntity.builder()
+				.creditType(CreditType.BUTTON)
+				.balance(0)
+				.user(testUser)
+				.build()
+		);
+
+		cash = userCreditRepository.save(
+			UserCreditEntity.builder()
+				.creditType(CreditType.CASH)
+				.balance(0)
+				.user(testUser)
+				.build()
+		);
 
 		rose = seedRepository.save(
 			SeedEntity.builder()
@@ -120,7 +138,7 @@ public class ItemRestDocsTest {
 
 		userItem = userItemRepository.save(
 			UserItemEntity.builder()
-				.user(testUser)
+				.userId(testUser.getId())
 				.item(limitFlower).build()
 		);
 
@@ -180,5 +198,4 @@ public class ItemRestDocsTest {
 				)
 			));
 	}
-
 }
