@@ -1,53 +1,48 @@
 package com.example.bloombackend.credit.entity;
 
-import com.example.bloombackend.user.entity.UserEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "user_credit")
-public class UserCreditEntity {
+@Table(name = "purchase_log")
+public class PurchaseLogEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "item_id")
-	@Getter
+	@Column(name = "purchase_log_id")
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
-	private UserEntity user;
+	@Column
+	private Long userId;
+
+	@Column(name = "item_id")
+	private Long itemId;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "credit_type")
 	private CreditType creditType;
 
+	@Column(name = "amount")
+	private int amount;
+
 	@Column(name = "balance")
-	@Getter
 	private int balance;
 
 	@Builder
-	public UserCreditEntity(UserEntity user, CreditType creditType, int balance) {
-		this.user = user;
+	public PurchaseLogEntity(Long userId, Long itemId, CreditType creditType, int amount, int balance) {
+		this.userId = userId;
+		this.itemId = itemId;
 		this.creditType = creditType;
+		this.amount = amount;
 		this.balance = balance;
-	}
-
-	public int updateBalance(int amount) {
-		return this.balance += amount;
 	}
 }
