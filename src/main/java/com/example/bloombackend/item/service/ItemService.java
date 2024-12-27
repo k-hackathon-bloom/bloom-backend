@@ -14,6 +14,8 @@ import com.example.bloombackend.item.entity.UserItemEntity;
 import com.example.bloombackend.item.repository.ItemRepository;
 import com.example.bloombackend.item.repository.UserItemRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class ItemService {
 	private static final boolean IS_DEFAULT = true;
@@ -55,5 +57,19 @@ public class ItemService {
 			.map(UserItemEntity::getItem)
 			.map(ItemInfo::from)
 			.toList();
+	}
+
+	@Transactional
+	public ItemInfo addUserItem(Long userId, Long itemId) {
+		return ItemInfo.from(userItemRepository.save(
+			UserItemEntity.builder()
+				.userId(userId)
+				.item(findItemById(itemId)).build()
+		).getItem());
+	}
+
+	public ItemEntity findItemById(Long itemId) {
+		return itemRepository.findById(itemId)
+			.orElseThrow(() -> new EntityNotFoundException("Item not fount:" + itemId));
 	}
 }

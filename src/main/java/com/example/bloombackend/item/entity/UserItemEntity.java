@@ -1,7 +1,5 @@
 package com.example.bloombackend.item.entity;
 
-import com.example.bloombackend.user.entity.UserEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -26,17 +24,16 @@ public class UserItemEntity {
 	@Column(name = "user_item_id")
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", nullable = false)
-	private UserEntity user;
+	@Column(name = "user_id", nullable = false)
+	private Long userId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "item_id", nullable = false)
 	private ItemEntity item;
 
 	@Builder
-	public UserItemEntity(UserEntity user, ItemEntity item) {
-		this.user = user;
+	public UserItemEntity(Long userId, ItemEntity item) {
+		this.userId = userId;
 		this.item = item;
 	}
 }
