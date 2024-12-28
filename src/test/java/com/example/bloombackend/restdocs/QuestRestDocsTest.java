@@ -176,6 +176,15 @@ public class QuestRestDocsTest {
                 ));
     }
 
+    @Test
+    @DisplayName("API - 미완료 퀘스트 알림 전송")
+    void sendDailyQuestNotificationsTest() throws Exception {
+        mockMvc.perform(post("/api/quests/notification")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("quest/send-daily-quest-notifications"));
+    }
+
     private Long getQuestId(QuestEntity questEntity) throws Exception {
         Field idField = QuestEntity.class.getDeclaredField("id");
         idField.setAccessible(true);

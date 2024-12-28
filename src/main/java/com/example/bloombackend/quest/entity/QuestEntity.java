@@ -31,4 +31,8 @@ public class QuestEntity {
     public QuestResponse toDto() {
         return new QuestResponse(id, iconUrl, title, maxCount);
     }
+
+    public String getTitle() {
+        return title;
+    }
 }

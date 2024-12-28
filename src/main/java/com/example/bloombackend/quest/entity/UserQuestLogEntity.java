@@ -41,4 +41,12 @@ public class UserQuestLogEntity {
         QuestResponse questResponse = quest.toDto();
         return new UserQuestLogResponse(questResponse.id(), questResponse.iconUrl(), questResponse.title(), questResponse.maxCount(), isDone);
     }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public QuestEntity getQuest() {
+        return quest;
+    }
 }

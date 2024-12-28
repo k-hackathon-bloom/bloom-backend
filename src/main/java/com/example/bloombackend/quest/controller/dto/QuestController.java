@@ -44,4 +44,10 @@ public class QuestController {
         questService.unregisterQuest(userId, questId);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/notification")
+    public ResponseEntity<Void> sendDailyQuestNotifications() {
+        questService.sendDailyQuestNotifications();
+        return ResponseEntity.ok().build();
+    }
 }
