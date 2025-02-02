@@ -3,6 +3,7 @@ package com.example.bloombackend.restdocs;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -20,10 +21,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.example.bloombackend.global.config.JwtTokenProvider;
 import com.example.bloombackend.oauth.OAuthProvider;
 import com.example.bloombackend.user.controller.dto.request.UserRegisterInfoRequest;
-import com.example.bloombackend.user.entity.Age;
-import com.example.bloombackend.user.entity.Gender;
 import com.example.bloombackend.user.entity.UserEntity;
 import com.example.bloombackend.user.repository.UserRepository;
+import com.example.bloombackend.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.transaction.Transactional;
@@ -38,6 +38,9 @@ public class UserRestDocsTest {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private UserService userService;
 
 	@SpyBean
 	private JwtTokenProvider jwtTokenProvider;
@@ -61,28 +64,25 @@ public class UserRestDocsTest {
 	@Test
 	@DisplayName("API - 설문에 따른 유저 정보 업데이트")
 	void updateUserInfoTest() throws Exception {
-		//given
+		// given
 		UserRegisterInfoRequest request = new UserRegisterInfoRequest("원지", "FROM_18_TO_24", "F", true);
 
-		//when & then
+		// when & then
 		mockMvc.perform(put("/api/user")
 				.header("Authorization", mockToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
 			.andDo(document("api-user-test/update-info",
+				preprocessResponse(prettyPrint()),
 				responseFields(
-					fieldWithPath("nickname").description("변경할 유저의 닉네임"),
-					fieldWithPath("age").description(
+					fieldWithPath("userInfo.nickname").description("변경할 유저의 닉네임"),
+					fieldWithPath("userInfo.age").description(
 						"유저의 나잇대(UNDER_18, FROM_18_TO_24, FROM_25_TO_34, FROM_35_TO_44, OVER_45)"),
-					fieldWithPath("gender").description("유저의 성별(M,F,O)"),
-					fieldWithPath("isSurvey").description("유저의 설문 완료 여부")
-				),
-				responseFields(
-					fieldWithPath("nickname").description("변경할 유저의 닉네임"),
-					fieldWithPath("age").description("유저의 나잇대"),
-					fieldWithPath("gender").description("유저의 성별"),
-					fieldWithPath("isSurvey").description("유저의 설문 완료 여부")
+					fieldWithPath("userInfo.gender").description("유저의 성별(M,F,O)"),
+					fieldWithPath("userInfo.isSurvey").description("유저의 설문 완료 여부"),
+					fieldWithPath("creditInfo.buttonBalance").description("유저의 버튼 크레딧 잔액"),
+					fieldWithPath("creditInfo.cashBalance").description("유저의 현금 크레딧 잔액")
 				)
 			));
 	}
@@ -90,20 +90,24 @@ public class UserRestDocsTest {
 	@Test
 	@DisplayName("API - 유저 정보 조회")
 	void getUserInfoTest() throws Exception {
-		//given
-		testUser.updateUserSurveyInfo("원지", Age.FROM_18_TO_24, Gender.F, true);
+		// given
+		UserRegisterInfoRequest request = new UserRegisterInfoRequest("원지", "FROM_18_TO_24", "F", true);
+		userService.registerUserInfo(testUser.getId(), request);
 
-		//when & then
+		// when & then
 		mockMvc.perform(get("/api/user")
 				.header("Authorization", mockToken)
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andDo(document("api-user-test/get-info",
+				preprocessResponse(prettyPrint()),
 				responseFields(
-					fieldWithPath("nickname").description("변경할 유저의 닉네임"),
-					fieldWithPath("age").description("유저의 나잇대"),
-					fieldWithPath("gender").description("유저의 성별"),
-					fieldWithPath("isSurvey").description("유저의 설문 완료 여부")
+					fieldWithPath("userInfo.nickname").description("유저의 닉네임"),
+					fieldWithPath("userInfo.age").description("유저의 나잇대"),
+					fieldWithPath("userInfo.gender").description("유저의 성별"),
+					fieldWithPath("userInfo.isSurvey").description("유저의 설문 완료 여부"),
+					fieldWithPath("creditInfo.buttonBalance").description("유저의 버튼 크레딧 잔액"),
+					fieldWithPath("creditInfo.cashBalance").description("유저의 현금 크레딧 잔액")
 				)
 			));
 	}

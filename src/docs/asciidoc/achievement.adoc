@@ -3,6 +3,7 @@ BloomBackend Team
 2024-09-12
 :toc: left
 :toclevels: 2
+:source-highlighter: highlightjs
 :sectlinks:
 
 == 성취도 API

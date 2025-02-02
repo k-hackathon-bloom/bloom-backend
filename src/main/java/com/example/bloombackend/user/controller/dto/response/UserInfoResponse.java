@@ -1,4 +1,10 @@
 package com.example.bloombackend.user.controller.dto.response;
 
-public record UserInfoResponse(String nickname, String age, String gender, boolean isSurvey) {
+import com.example.bloombackend.credit.service.dto.UserCreditInfo;
+import com.example.bloombackend.user.controller.dto.response.info.UserInfo;
+
+import lombok.Builder;
+
+@Builder
+public record UserInfoResponse(UserInfo userInfo, UserCreditInfo creditInfo) {
 }

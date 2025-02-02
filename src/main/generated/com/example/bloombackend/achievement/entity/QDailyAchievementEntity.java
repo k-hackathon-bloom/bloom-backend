@@ -26,7 +26,7 @@ public class QDailyAchievementEntity extends EntityPathBase<DailyAchievementEnti
 
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
 
-    public final QFlowerEntity flower;
+    public final com.example.bloombackend.item.entity.items.QSeedEntity flower;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
@@ -50,7 +50,7 @@ public class QDailyAchievementEntity extends EntityPathBase<DailyAchievementEnti
 
     public QDailyAchievementEntity(Class<? extends DailyAchievementEntity> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.flower = inits.isInitialized("flower") ? new QFlowerEntity(forProperty("flower")) : null;
+        this.flower = inits.isInitialized("flower") ? new com.example.bloombackend.item.entity.items.QSeedEntity(forProperty("flower")) : null;
         this.user = inits.isInitialized("user") ? new com.example.bloombackend.user.entity.QUserEntity(forProperty("user")) : null;
     }
 

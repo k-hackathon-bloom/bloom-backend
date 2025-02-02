@@ -1,4 +1,6 @@
 spring:
+  cache:
+    type: simple
   config:
     import: "optional:application-secret.yml"
   datasource:
@@ -30,3 +32,4 @@ oauth:
       token-url: https://kauth.kakao.com/oauth/token
       user-info-url: https://kapi.kakao.com/v2/user/me
       user-name-attribute: id
+
