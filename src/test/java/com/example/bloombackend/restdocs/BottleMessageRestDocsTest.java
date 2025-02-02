@@ -76,7 +76,6 @@ public class BottleMessageRestDocsTest {
 	@BeforeEach
 	void setUp() {
 		objectMapper = new ObjectMapper();
-		mockToken = "jwtToken";
 		testUser = userRepository.save(new UserEntity(OAuthProvider.KAKAO, "testUser", "testId"));
 		doNothing().when(jwtTokenProvider).validateAccessToken(mockToken);
 		doReturn(testUser.getId()).when(jwtTokenProvider).getUserIdFromToken(mockToken);

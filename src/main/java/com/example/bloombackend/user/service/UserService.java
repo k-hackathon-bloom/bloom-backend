@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.bloombackend.credit.service.CreditService;
+import com.example.bloombackend.credit.service.dto.UserCreditInfo;
 import com.example.bloombackend.oauth.controller.dto.response.KakaoInfoResponse;
 import com.example.bloombackend.user.controller.dto.request.UserRegisterInfoRequest;
 import com.example.bloombackend.user.controller.dto.response.UserInfoResponse;
@@ -17,10 +19,12 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class UserService {
 	private final UserRepository userRepository;
+	private final CreditService creditService;
 
 	@Autowired
-	public UserService(UserRepository userRepository) {
+	public UserService(UserRepository userRepository, CreditService creditService) {
 		this.userRepository = userRepository;
+		this.creditService = creditService;
 	}
 
 	public Long findOrCreateUser(KakaoInfoResponse response) {
@@ -49,11 +53,14 @@ public class UserService {
 		UserEntity user = findUserById(userId);
 		user.updateUserSurveyInfo(request.nickname(), Age.valueOf(request.age()),
 			Gender.valueOf(request.gender()), request.isSurvey());
-		return user.getUserInfo();
+
+		UserCreditInfo creditInfo = creditService.createUserCredit(user);
+
+		return new UserInfoResponse(user.getUserInfo(), creditInfo);
 	}
 
 	@Transactional(readOnly = true)
 	public UserInfoResponse getUserInfo(Long userId) {
-		return findUserById(userId).getUserInfo();
+		return new UserInfoResponse(findUserById(userId).getUserInfo(), creditService.getUserCredit(userId));
 	}
 }

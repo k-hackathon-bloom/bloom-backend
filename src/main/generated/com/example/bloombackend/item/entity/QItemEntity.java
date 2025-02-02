@@ -19,17 +19,17 @@ public class QItemEntity extends EntityPathBase<ItemEntity> {
 
     public static final QItemEntity itemEntity = new QItemEntity("itemEntity");
 
+    public final DatePath<java.time.LocalDate> endDate = createDate("endDate", java.time.LocalDate.class);
+
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath imgUrl = createString("imgUrl");
-
-    public final BooleanPath isSale = createBoolean("isSale");
+    public final BooleanPath isDefault = createBoolean("isDefault");
 
     public final StringPath name = createString("name");
 
     public final NumberPath<Integer> price = createNumber("price", Integer.class);
 
-    public final EnumPath<ItemType> type = createEnum("type", ItemType.class);
+    public final StringPath thumbnailImgUrl = createString("thumbnailImgUrl");
 
     public QItemEntity(String variable) {
         super(ItemEntity.class, forVariable(variable));

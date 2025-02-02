@@ -1,50 +1,52 @@
 package com.example.bloombackend.item.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "item_type")
 @Table(name = "item")
-@Getter
-public class ItemEntity {
+@SuperBuilder
+public abstract class ItemEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "item_id")
+	@Getter
 	private Long id;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "type", nullable = false)
-	private ItemType type;
-
 	@Column(name = "name", nullable = false)
+	@Getter
 	private String name;
 
 	@Column(name = "price", nullable = false)
+	@Getter
 	private Integer price;
 
-	@Column(name = "img_url", nullable = false)
-	private String imgUrl;
+	@Column(name = "thumbnail", nullable = false)
+	@Getter
+	private String thumbnailImgUrl;
 
-	@Column(name = "is_sale")
-	private Boolean isSale;
+	@Column(name = "is_default")
+	private Boolean isDefault;
 
-	@Builder
-	public ItemEntity(ItemType type, String name, Integer price, String imgUrl, Boolean isSale) {
-		this.type = type;
-		this.name = name;
-		this.price = price;
-		this.imgUrl = imgUrl;
-		this.isSale = isSale;
-	}
+	@Column(name = "end_date")
+	@Getter
+	private LocalDate endDate;
+
+	public abstract String getType();
 }
