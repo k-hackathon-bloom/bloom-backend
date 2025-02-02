@@ -2,11 +2,13 @@ package com.example.bloombackend.restdocs;
 
 import com.example.bloombackend.oauth.util.JwtTokenProvider;
 import com.example.bloombackend.oauth.OAuthProvider;
+import com.example.bloombackend.quest.controller.dto.QuestRecommendResponse;
 import com.example.bloombackend.quest.controller.dto.request.QuestRegisterRequest;
 import com.example.bloombackend.quest.entity.QuestEntity;
 import com.example.bloombackend.quest.entity.UserQuestLogEntity;
 import com.example.bloombackend.quest.repository.QuestRepository;
 import com.example.bloombackend.quest.repository.UserQuestLogRepository;
+import com.example.bloombackend.quest.service.QuestService;
 import com.example.bloombackend.user.entity.UserEntity;
 import com.example.bloombackend.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,6 +56,9 @@ public class QuestRestDocsTest {
 
     @SpyBean
     private JwtTokenProvider jwtTokenProvider;
+
+    @SpyBean
+    private QuestService questService;
 
     private UserEntity testUser;
 
@@ -172,6 +177,38 @@ public class QuestRestDocsTest {
                 .andDo(document("quest/unregister-quests",
                         pathParameters(
                                 parameterWithName("questId").description("등록 해제할 퀘스트 ID")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("API - 퀘스트 추천")
+    void recommendQuestsTest() throws Exception {
+        doReturn(new QuestRecommendResponse(List.of(10L, 20L, 30L))).when(questService).recommendQuests(testUser.getId());
+
+        mockMvc.perform(get("/api/quests/recommend")
+                .header("Authorization", mockToken)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("quest/recommend-quests",
+                        responseFields(
+                                fieldWithPath("recommendedQuestIds[]").description("추천된 퀘스트 ID 목록")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("API - 퀘스트 추천 실패")
+    void recommendQuestsFailTest() throws Exception {
+        doReturn(new QuestRecommendResponse(List.of(1L, 2L, 3L))).when(questService).recommendQuests(testUser.getId());
+
+        mockMvc.perform(get("/api/quests/recommend")
+                .header("Authorization", mockToken)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("quest/recommend-quests-fail",
+                        responseFields(
+                                fieldWithPath("recommendedQuestIds[]").description("기본 추천 퀘스트 ID 목록")
                         )
                 ));
     }
