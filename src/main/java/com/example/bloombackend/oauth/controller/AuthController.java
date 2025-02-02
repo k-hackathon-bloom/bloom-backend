@@ -35,7 +35,7 @@ public class AuthController {
 		return authService.getKakaoLoginUrl();
 	}
 
-	@GetMapping("/refresh")
+	@PostMapping("/refresh")
 	public ResponseEntity<RefreshResponse> refreshAccessToken(@RequestBody RefreshRequest request) {
 		String accessToken = authService.refreshAccessToken(request);
 		return ResponseEntity.ok(new RefreshResponse(accessToken));

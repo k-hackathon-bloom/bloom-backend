@@ -2,6 +2,7 @@ package com.example.bloombackend.quest.entity;
 
 import com.example.bloombackend.quest.controller.dto.response.QuestResponse;
 import com.example.bloombackend.quest.controller.dto.response.UserQuestLogResponse;
+import com.example.bloombackend.quest.service.prompt.UserQuestLogForPrompt;
 import com.example.bloombackend.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -48,5 +49,10 @@ public class UserQuestLogEntity {
 
     public QuestEntity getQuest() {
         return quest;
+    }    
+    
+    public UserQuestLogForPrompt toPromptData() {
+        QuestResponse questResponse = quest.toDto();
+        return new UserQuestLogForPrompt(questResponse.id(), questResponse.title(), selectedDate, isDone);
     }
 }

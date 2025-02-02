@@ -92,7 +92,7 @@ public class AuthRestDocsTest {
         String refreshToken = jwtTokenProvider.createRefreshToken("1");
         RefreshRequest request = new RefreshRequest(refreshToken);
 
-        mockMvc.perform(get("/api/auth/refresh")
+        mockMvc.perform(post("/api/auth/refresh")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -136,7 +136,7 @@ public class AuthRestDocsTest {
 
 
         LogoutRequest request = new LogoutRequest(refreshToken);
-        mockMvc.perform(get("/api/auth/refresh")
+        mockMvc.perform(post("/api/auth/refresh")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header(HttpHeaders.AUTHORIZATION, refreshToken))
@@ -157,7 +157,7 @@ public class AuthRestDocsTest {
         String expiredToken = createExpiredToken();
         RefreshRequest request = new RefreshRequest(expiredToken);
 
-        mockMvc.perform(get("/api/auth/refresh")
+        mockMvc.perform(post("/api/auth/refresh")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header(HttpHeaders.AUTHORIZATION, expiredToken))
@@ -178,7 +178,7 @@ public class AuthRestDocsTest {
         String invalidToken = "잘못된.토큰.값";
         RefreshRequest request = new RefreshRequest(invalidToken);
 
-        mockMvc.perform(get("/api/auth/refresh")
+        mockMvc.perform(post("/api/auth/refresh")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header(HttpHeaders.AUTHORIZATION, invalidToken))
