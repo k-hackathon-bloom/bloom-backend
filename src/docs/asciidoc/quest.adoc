@@ -100,5 +100,3 @@ include::{snippets}/quest/recommend-quests-fail/http-response.adoc[]
 
 ==== response body
 include::{snippets}/quest/recommend-quests-fail/response-fields.adoc[]
-
-
