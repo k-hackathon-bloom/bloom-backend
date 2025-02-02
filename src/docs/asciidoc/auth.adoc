@@ -1,0 +1,140 @@
+= 인증 API 문서
+BloomBackend Team
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== 인증 API
+
+본 문서는 인증 도메인에 대한 API 명세를 제공합니다.
+
+=== 1. 카카오 로그인 URL 조회 API
+
+==== 설명
+카카오 로그인을 위한 인증 URL을 반환합니다.
+
+==== HTTP request
+include::{snippets}/api-auth-test/kakao-login-url/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/api-auth-test/kakao-login-url/http-response.adoc[]
+
+
+=== 2. 카카오 로그인 API
+
+==== 설명
+카카오 인증 코드를 받아 Access 토큰과 Refresh 토큰을 발급합니다.
+
+==== HTTP request
+include::{snippets}/api-auth-test/kakao-login/http-request.adoc[]
+
+==== request body
+include::{snippets}/api-auth-test/kakao-login/request-fields.adoc[]
+
+==== HTTP response
+include::{snippets}/api-auth-test/kakao-login/http-response.adoc[]
+
+==== response body
+include::{snippets}/api-auth-test/kakao-login/response-fields.adoc[]
+
+=== 3. Access 토큰 재발급 API
+
+==== 설명
+Refresh 토큰을 사용하여 Access 토큰을 재발급합니다.
+
+==== HTTP request
+include::{snippets}/api-auth-test/refresh-token/http-request.adoc[]
+
+==== request body
+include::{snippets}/api-auth-test/refresh-token/request-fields.adoc[]
+
+==== HTTP response
+include::{snippets}/api-auth-test/refresh-token/http-response.adoc[]
+
+==== response body
+include::{snippets}/api-auth-test/refresh-token/response-fields.adoc[]
+
+=== 4. 로그아웃 API
+
+==== 설명
+로그아웃 처리를 수행합니다.
+
+==== HTTP request
+include::{snippets}/api-auth-test/logout/http-request.adoc[]
+
+==== request body
+include::{snippets}/api-auth-test/logout/request-fields.adoc[]
+
+==== HTTP response
+include::{snippets}/api-auth-test/logout/http-response.adoc[]
+
+
+=== 5. 로그아웃된 Refresh 토큰으로 재발급 시도 시 예외
+
+==== 설명
+이미 로그아웃 처리된 Refresh 토큰을 사용하여 Access 토큰 재발급을 시도할 경우 예외 응답을 반환합니다.
+
+==== HTTP request
+include::{snippets}/api-auth-test/logged-out-token/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/api-auth-test/logged-out-token/http-response.adoc[]
+
+==== response body
+include::{snippets}/api-auth-test/logged-out-token/response-fields.adoc[]
+
+=== 6. 만료된 Refresh 토큰으로 Access 토큰 재발급 시도 시 예외
+
+==== 설명
+만료된 Refresh 토큰을 사용하여 Access 토큰 재발급을 시도할 경우 예외 응답을 반환합니다.
+
+==== HTTP request
+include::{snippets}/api-auth-test/expired-refresh-token/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/api-auth-test/expired-refresh-token/http-response.adoc[]
+
+==== response body
+include::{snippets}/api-auth-test/expired-refresh-token/response-fields.adoc[]
+
+=== 7. 유효하지 않은 Refresh 토큰으로 Access 토큰 재발급 시도 시 예외
+
+==== 설명
+유효하지 않은 Refresh 토큰을 사용하여 Access 토큰 재발급을 시도할 경우 예외 응답을 반환합니다.
+
+==== HTTP request
+include::{snippets}/api-auth-test/invalid-refresh-token/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/api-auth-test/invalid-refresh-token/http-response.adoc[]
+
+==== response body
+include::{snippets}/api-auth-test/invalid-refresh-token/response-fields.adoc[]
+
+=== 8. 유효하지 않은 Access 토큰으로 유저 정보 조회 시 예외
+
+==== 설명
+유효하지 않은 Access 토큰으로 유저 정보 조회 시 예외 응답을 반환합니다.
+
+==== HTTP request
+include::{snippets}/api-auth-test/invalid-token/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/api-auth-test/invalid-token/http-response.adoc[]
+
+==== response body
+include::{snippets}/api-auth-test/invalid-token/response-fields.adoc[]
+
+=== 9. 만료된 Access 토큰으로 유저 정보 조회 시 예외
+
+==== 설명
+만료된 Access 토큰으로 유저 정보 조회 시 예외 응답을 반환합니다.
+
+==== HTTP request
+include::{snippets}/api-auth-test/expired-token/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/api-auth-test/expired-token/http-response.adoc[]
+
+==== response body
+include::{snippets}/api-auth-test/expired-token/response-fields.adoc[]

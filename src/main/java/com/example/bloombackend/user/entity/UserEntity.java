@@ -61,6 +61,9 @@ public class UserEntity {
 	@Column(name = "is_servey")
 	private boolean isSurvey = false;
 
+	@Column(name = "fcm_token")
+	private String fcmToken;
+
 	@Builder
 	public UserEntity(OAuthProvider provider, String name, String snsId) {
 		this.provider = provider;
@@ -81,5 +84,9 @@ public class UserEntity {
 
 	public Long getId() {
 		return id;
+	}
+
+	public String getFcmToken() {
+		return fcmToken;
 	}
 }

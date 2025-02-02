@@ -1,7 +1,7 @@
 package com.example.bloombackend.global.config.resolver;
 
-import com.example.bloombackend.global.config.JwtTokenProvider;
 import com.example.bloombackend.global.config.annotation.CurrentUser;
+import com.example.bloombackend.oauth.util.JwtTokenProvider;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -27,6 +27,7 @@ public class CurrentUserResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         String accessToken = webRequest.getHeader("Authorization");
+        jwtTokenProvider.validateAccessToken(accessToken);
         return jwtTokenProvider.getUserIdFromToken(accessToken);
     }
 }

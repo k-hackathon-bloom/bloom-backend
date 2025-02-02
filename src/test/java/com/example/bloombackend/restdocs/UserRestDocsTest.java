@@ -17,7 +17,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.example.bloombackend.global.config.JwtTokenProvider;
+import com.example.bloombackend.oauth.util.JwtTokenProvider;
 import com.example.bloombackend.oauth.OAuthProvider;
 import com.example.bloombackend.user.controller.dto.request.UserRegisterInfoRequest;
 import com.example.bloombackend.user.entity.Age;
@@ -55,6 +55,7 @@ public class UserRestDocsTest {
 		// 사용자 생성 및 토큰 처리 모킹
 		mockToken = "jwtToken";
 		testUser = userRepository.save(new UserEntity(OAuthProvider.KAKAO, "testUser", "testId"));
+		doNothing().when(jwtTokenProvider).validateAccessToken(mockToken);
 		doReturn(testUser.getId()).when(jwtTokenProvider).getUserIdFromToken(mockToken);
 	}
 

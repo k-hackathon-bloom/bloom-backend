@@ -1,3 +1,12 @@
+= API 문서
+BloomBackend Team
+2024-08-27
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== 퀘스트 API
+
 === 1. 사용 가능한 퀘스트 목록 조회 API
 
 ==== HTTP request
@@ -46,6 +55,45 @@ include::{snippets}/quest/get-registered-today-quests/response-fields.adoc[]
 
 include::{snippets}/quest/unregister-quests/http-request.adoc[]
 
+==== path parameters
+
+include::{snippets}/quest/unregister-quests/path-parameters.adoc[]
+
 ==== HTTP response
 
 include::{snippets}/quest/unregister-quests/http-response.adoc[]
+
+=== 5. 퀘스트 완료 API
+
+==== HTTP request
+
+include::{snippets}/quest/complete-quest/http-request.adoc[]
+
+==== path parameters
+
+include::{snippets}/quest/complete-quest/path-parameters.adoc[]
+
+==== HTTP response
+
+include::{snippets}/quest/complete-quest/http-response.adoc[]
+
+=== 6. 퀘스트 추천 API
+
+==== HTTP request
+include::{snippets}/quest/recommend-quests/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/quest/recommend-quests/http-response.adoc[]
+
+==== response body
+include::{snippets}/quest/recommend-quests/response-fields.adoc[]
+
+=== 7. 퀘스트 추천 실패시
+
+AI 오류로 인한 퀘스트 추천에 실패했을 때 반환되는 응답입니다.
+
+==== HTTP response
+include::{snippets}/quest/recommend-quests-fail/http-response.adoc[]
+
+==== response body
+include::{snippets}/quest/recommend-quests-fail/response-fields.adoc[]
