@@ -7,7 +7,7 @@ import com.example.bloombackend.achievement.entity.FlowerEntity;
 import com.example.bloombackend.achievement.repository.DailyAchievementRepository;
 import com.example.bloombackend.achievement.repository.FlowerRepository;
 import com.example.bloombackend.global.AIUtil;
-import com.example.bloombackend.global.config.JwtTokenProvider;
+import com.example.bloombackend.oauth.util.JwtTokenProvider;
 import com.example.bloombackend.oauth.OAuthProvider;
 import com.example.bloombackend.user.entity.UserEntity;
 import com.example.bloombackend.user.repository.UserRepository;
@@ -28,6 +28,7 @@ import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -73,6 +74,7 @@ public class AchievementRestDocsTest {
         objectMapper = new ObjectMapper();
         mockToken = "jwtToken";
         testUser = userRepository.save(new UserEntity(OAuthProvider.KAKAO, "testUser", "testId"));
+        doNothing().when(jwtTokenProvider).validateAccessToken(mockToken);
         doReturn(testUser.getId()).when(jwtTokenProvider).getUserIdFromToken(mockToken);
 
         // 외부 API 호출의 경우 테스트 시 Mocking 처리

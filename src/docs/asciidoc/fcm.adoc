@@ -1,0 +1,76 @@
+= FCM API 문서
+BloomBackend Team
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== FCM API
+
+본 문서는 FCM 푸시 알림에 대한 API 명세를 제공합니다.
+
+=== 1. FCM 토큰 등록
+
+==== 설명
+FCM 토큰 등록을 위한 API입니다. 기기에서 발급받은 FCM 토큰을 서버에 업데이트합니다.
+로그인 시 또는 토큰이 갱신될 때마다 호출되어야 합니다.
+
+==== HTTP request
+include::{snippets}/api-fcm-register/http-request.adoc[]
+
+==== request body
+include::{snippets}/api-fcm-register/request-fields.adoc[]
+
+==== HTTP response
+include::{snippets}/api-fcm-register/http-response.adoc[]
+
+=== 2. 미완료된 퀘스트 푸시 알림 발송
+
+==== 설명
+미완료된 퀘스트에 대한 푸시 알림을 발송합니다. 미완료된 퀘스트가 없을 경우 알림이 발생하지 않습니다.
+스케쥴을 통해 13시, 19시에 자동으로 발송되지만, 연동을 위해 임시로 API를 제공합니다.
+
+==== HTTP request
+include::{snippets}/quest/send-daily-quest-notifications/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/quest/send-daily-quest-notifications/http-response.adoc[]
+
+==== FCM 메시지 데이터 형식
+프론트에서 받는 FCM 푸시 알림 메시지의 데이터 구조의 예시는 다음과 같습니다.
+
+[source, json]
+----
+{
+  "collapseKey": "com.bloom",
+  "data": {},
+  "from": "1026251272454",
+  "messageId": "0:1735364184273819%3b374f563b374f56",
+  "notification": {
+    "android": {},
+    "body": "심호흡 운동 5번 하기, 미뤄둔를 완료해보세요!",
+    "title": "💪 오늘의 퀘스트 알림!"
+  },
+  "originalPriority": 2,
+  "priority": 2,
+  "sentTime": 1735364184266,
+  "ttl": 2419200
+}
+----
+
+==== 메시지 데이터 필드 설명
+
+[cols="1,1,3", options="header"]
+|===
+| 필드 | 타입 | 설명
+| collapseKey | String | FCM 메시지를 그룹화하기 위한 키.
+| data | Object | 커스텀 데이터. 필요한 데이터가 있을 경우 추가 가능.
+| from | String | 발신자 정보 (프로젝트 ID).
+| messageId | String | FCM 메시지 고유 ID.
+| notification | Object | 사용자 디바이스로 전송될 알림의 상세 정보.
+| notification.body | String | 알림 내용.
+| notification.title | String | 알림 제목.
+| originalPriority | Number | 원래의 우선 순위 값 (2: 높음, 디바이스가 절전 모드인 경우도 알림 발생).
+| priority | Number | 클라이언트 디바이스에서 메시지가 수신된 후, 적용된 최종 우선순위.
+| sentTime | Number | 메시지 발송 시각 (milliseconds).
+| ttl | Number | FCM에서 메시지가 서버에 도착한 후 디바이스에 전달되기까지 허용되는 최대 시간.
+|===

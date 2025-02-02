@@ -1,12 +1,14 @@
 package com.example.bloombackend.restdocs;
 
-import com.example.bloombackend.global.config.JwtTokenProvider;
+import com.example.bloombackend.oauth.util.JwtTokenProvider;
 import com.example.bloombackend.oauth.OAuthProvider;
+import com.example.bloombackend.quest.controller.dto.QuestRecommendResponse;
 import com.example.bloombackend.quest.controller.dto.request.QuestRegisterRequest;
 import com.example.bloombackend.quest.entity.QuestEntity;
 import com.example.bloombackend.quest.entity.UserQuestLogEntity;
 import com.example.bloombackend.quest.repository.QuestRepository;
 import com.example.bloombackend.quest.repository.UserQuestLogRepository;
+import com.example.bloombackend.quest.service.QuestService;
 import com.example.bloombackend.user.entity.UserEntity;
 import com.example.bloombackend.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -54,6 +57,9 @@ public class QuestRestDocsTest {
     @SpyBean
     private JwtTokenProvider jwtTokenProvider;
 
+    @SpyBean
+    private QuestService questService;
+
     private UserEntity testUser;
 
     private String mockToken;
@@ -69,6 +75,7 @@ public class QuestRestDocsTest {
         objectMapper = new ObjectMapper();
         mockToken = "jwtToken";
         testUser = userRepository.save(new UserEntity(OAuthProvider.KAKAO, "testUser", "testId"));
+        doNothing().when(jwtTokenProvider).validateAccessToken(mockToken);
         doReturn(testUser.getId()).when(jwtTokenProvider).getUserIdFromToken(mockToken);
         questEntity1 = questRepository.save(new QuestEntity("https://test.com/icon1.png", "물 마시기", 10));
         questEntity2 = questRepository.save(new QuestEntity("https://test.com/icon2.png", "산책 하기", 1));
@@ -170,6 +177,46 @@ public class QuestRestDocsTest {
                 .andDo(document("quest/unregister-quests",
                         pathParameters(
                                 parameterWithName("questId").description("등록 해제할 퀘스트 ID")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("API - 미완료 퀘스트 알림 전송")
+    void sendDailyQuestNotificationsTest() throws Exception {
+        mockMvc.perform(post("/api/quests/notification")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("quest/send-daily-quest-notifications"));
+    }
+    
+    @DisplayName("API - 퀘스트 추천")
+    void recommendQuestsTest() throws Exception {
+        doReturn(new QuestRecommendResponse(List.of(10L, 20L, 30L))).when(questService).recommendQuests(testUser.getId());
+
+        mockMvc.perform(get("/api/quests/recommend")
+                .header("Authorization", mockToken)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("quest/recommend-quests",
+                        responseFields(
+                                fieldWithPath("recommendedQuestIds[]").description("추천된 퀘스트 ID 목록")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("API - 퀘스트 추천 실패")
+    void recommendQuestsFailTest() throws Exception {
+        doReturn(new QuestRecommendResponse(List.of(1L, 2L, 3L))).when(questService).recommendQuests(testUser.getId());
+
+        mockMvc.perform(get("/api/quests/recommend")
+                .header("Authorization", mockToken)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("quest/recommend-quests-fail",
+                        responseFields(
+                                fieldWithPath("recommendedQuestIds[]").description("기본 추천 퀘스트 ID 목록")
                         )
                 ));
     }

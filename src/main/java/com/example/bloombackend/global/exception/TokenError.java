@@ -4,11 +4,13 @@ import org.springframework.http.HttpStatus;
 
 public enum TokenError implements ErrorCode {
 
-    INVALID_TOKEN(HttpStatus.BAD_REQUEST,"T1", "올바르지 않은 AccessToken"),
-    EXPIRED_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED,"T2", "만료된 AccessToken"),
-    EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "T3", "만료된 ReFreshToken"),
-    NULL_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED,"T4", "존재하지 않은 ReFreshToken 접근"),
-    NOT_ACCESS_TOKEN_FOR_REISSUE(HttpStatus.BAD_REQUEST,"T5","재발급하기에는 유효기간이 남은 AccessToken");
+    INVALID_ACCESS_TOKEN(HttpStatus.BAD_REQUEST,"T1", "올바르지 않은 AccessToken입니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST,"T2", "올바르지 않은 ReFreshToken입니다."),
+    EXPIRED_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED,"T3", "만료된 AccessToken입니다."),
+    EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "T4", "만료된 ReFreshToken입니다."),
+    LOGGED_OUT_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED,"T5","로그아웃된 RefreshToken입니다."),
+    NOT_ACCESS_TOKEN(HttpStatus.BAD_REQUEST,"T6","AccessToken이 아닙니다."),
+    NOT_REFRESH_TOKEN(HttpStatus.BAD_REQUEST,"T7","RefreshToken이 아닙니다.");
 
     private final HttpStatus httpStatusCode;
     private final String developCode;
