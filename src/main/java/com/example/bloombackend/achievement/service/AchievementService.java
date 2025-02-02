@@ -31,7 +31,6 @@ import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class AchievementService {
-
 	private final DailyAchievementRepository dailyAchievementRepository;
 	private final SeedRepository seedRepository;
 	private final UserRepository userRepository;

@@ -201,7 +201,7 @@ public class BottleMessageService {
 	private SentBottleMessageResponse getSentMessagesResponse(List<BottleMessageEntity> bottleMessageEntities) {
 		return new SentBottleMessageResponse(bottleMessageEntities.stream()
 			.map(entity ->
-				new SentBottleMessageInfo(localDateToString(entity.getCreatedAt(), "yyyy-MM-dd"),
+				new SentBottleMessageInfo(localDateToString(entity.getCreatedAt(), "yyyy-MM-dd HH:mm:ss"),
 					entity.toSummaryInfo())
 			)
 			.toList());
