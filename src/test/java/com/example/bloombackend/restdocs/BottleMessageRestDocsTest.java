@@ -1,14 +1,18 @@
 package com.example.bloombackend.restdocs;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.util.List;
-
+import com.example.bloombackend.bottlemsg.controller.dto.request.CreateBottleMessageReactionRequest;
+import com.example.bloombackend.bottlemsg.controller.dto.request.CreateBottleMessageRequest;
+import com.example.bloombackend.bottlemsg.entity.*;
+import com.example.bloombackend.bottlemsg.repository.BottleMessageLogRepository;
+import com.example.bloombackend.bottlemsg.repository.BottleMessageRepository;
+import com.example.bloombackend.claude.service.ClaudeService;
+import com.example.bloombackend.oauth.OAuthProvider;
+import com.example.bloombackend.oauth.util.JwtTokenProvider;
+import com.example.bloombackend.user.entity.UserEntity;
+import com.example.bloombackend.user.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,23 +24,15 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.example.bloombackend.bottlemsg.controller.dto.request.CreateBottleMessageReactionRequest;
-import com.example.bloombackend.bottlemsg.controller.dto.request.CreateBottleMessageRequest;
-import com.example.bloombackend.bottlemsg.entity.BottleMessageEntity;
-import com.example.bloombackend.bottlemsg.entity.BottleMessageReaction;
-import com.example.bloombackend.bottlemsg.entity.BottleMessageReceiptLog;
-import com.example.bloombackend.bottlemsg.entity.Negativity;
-import com.example.bloombackend.bottlemsg.entity.ReactionType;
-import com.example.bloombackend.bottlemsg.repository.BottleMessageLogRepository;
-import com.example.bloombackend.bottlemsg.repository.BottleMessageRepository;
-import com.example.bloombackend.oauth.util.JwtTokenProvider;
-import com.example.bloombackend.oauth.OAuthProvider;
-import com.example.bloombackend.user.entity.UserEntity;
-import com.example.bloombackend.user.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import java.util.List;
 
-import jakarta.transaction.Transactional;
+import static org.mockito.Mockito.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -58,6 +54,9 @@ public class BottleMessageRestDocsTest {
 	@SpyBean
 	private JwtTokenProvider jwtTokenProvider;
 
+	@SpyBean
+	private ClaudeService claudeService;
+
 	private UserEntity testUser;
 
 	private UserEntity testSender;
@@ -76,11 +75,24 @@ public class BottleMessageRestDocsTest {
 	@BeforeEach
 	void setUp() {
 		objectMapper = new ObjectMapper();
+		mockToken = "jwtToken";
 		testUser = userRepository.save(new UserEntity(OAuthProvider.KAKAO, "testUser", "testId"));
 		doNothing().when(jwtTokenProvider).validateAccessToken(mockToken);
 		doReturn(testUser.getId()).when(jwtTokenProvider).getUserIdFromToken(mockToken);
 		testSender = userRepository.save(new UserEntity(OAuthProvider.KAKAO, "testSender", "testSenderId"));
-		doReturn(testUser.getId()).when(jwtTokenProvider).getUserIdFromToken(mockToken);
+
+		String messageAnalysis = "| 관련된 감정 | 퍼센트 |\n" +
+				"|-------------|--------|\n" +
+				"| 우울함      | 70     |\n" +
+				"| 외로움      | 60     |\n" +
+				"| 불안        | 50     |\n" +
+				"| 부정적 영향여부 |\n" +
+				"| ------------ |\n" +
+				"| UPPER       |";
+
+		// 외부 API 호출의 경우 테스트 시 Mocking 처리
+		doReturn(messageAnalysis).when(claudeService).callClaudeForSentimentAnalysis(anyString());
+
 		bottleMessage1 = bottleMessageRepository.save(
 			BottleMessageEntity.builder()
 				.user(testSender)
