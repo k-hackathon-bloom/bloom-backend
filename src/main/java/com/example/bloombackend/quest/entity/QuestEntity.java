@@ -33,6 +33,10 @@ public class QuestEntity {
         return new QuestResponse(id, iconUrl, title, maxCount);
     }
 
+    public String getTitle() {
+        return title;
+    }
+  
     public QuestForPrompt toPromptData() {
         return new QuestForPrompt(id, title, maxCount);
     }

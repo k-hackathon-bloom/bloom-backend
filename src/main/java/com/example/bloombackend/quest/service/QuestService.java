@@ -1,5 +1,6 @@
 package com.example.bloombackend.quest.service;
 
+import com.example.bloombackend.global.FcmUtil;
 import com.example.bloombackend.global.AIUtil;
 import com.example.bloombackend.global.exception.QuestError;
 import com.example.bloombackend.quest.controller.dto.QuestRecommendResponse;
@@ -21,24 +22,30 @@ import org.json.JSONException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestService {
     private final UserRepository userRepository;
     private final QuestRepository questRepository;
     private final UserQuestLogRepository userQuestLogRepository;
+    private final FcmUtil fcmUtil;
     private final QuestRecommendationPrompt questRecommendationPrompt;
     private final AIUtil aiUtil;
     private final ObjectMapper objectMapper;
 
-    public QuestService(UserRepository userRepository, QuestRepository questRepository, UserQuestLogRepository userQuestLogRepository, QuestRecommendationPrompt questRecommendationPrompt, AIUtil aiUtil, ObjectMapper objectMapper) {
+    public QuestService(UserRepository userRepository, QuestRepository questRepository, UserQuestLogRepository userQuestLogRepository, QuestRecommendationPrompt questRecommendationPrompt, AIUtil aiUtil, FcmUtil fcmUtil, ObjectMapper objectMapper) {
         this.userRepository = userRepository;
         this.questRepository = questRepository;
         this.userQuestLogRepository = userQuestLogRepository;
         this.questRecommendationPrompt = questRecommendationPrompt;
         this.aiUtil = aiUtil;
+        this.fcmUtil = fcmUtil;
         this.objectMapper = objectMapper;
     }
 
@@ -92,6 +99,26 @@ public class QuestService {
          userQuestLogRepository.completeQuest(userId, questId);
     }
 
+    @Transactional
+    public void sendDailyQuestNotifications() {
+        List<UserQuestLogEntity> incompleteQuests = userQuestLogRepository.findIncompleteQuestsByDate(LocalDate.now());
+
+        Map<UserEntity, List<UserQuestLogEntity>> userQuestMap = incompleteQuests.stream()
+                .collect(Collectors.groupingBy(UserQuestLogEntity::getUser));
+
+        userQuestMap.forEach((user, quests) -> {
+            String title = "\uD83D\uDCAA 오늘의 퀘스트 알림!";
+            String body = quests.stream()
+                    .map(q -> q.getQuest().getTitle())
+                    .collect(Collectors.joining(", ")) + "를 완료해보세요!";
+            try {
+                fcmUtil.sendNotification(user.getFcmToken(), title, body);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+  
     @Transactional(readOnly = true)
     public QuestRecommendResponse recommendQuests(Long userId) throws JsonProcessingException {
         List<QuestEntity> allQuests = questRepository.findAll();

@@ -182,6 +182,14 @@ public class QuestRestDocsTest {
     }
 
     @Test
+    @DisplayName("API - 미완료 퀘스트 알림 전송")
+    void sendDailyQuestNotificationsTest() throws Exception {
+        mockMvc.perform(post("/api/quests/notification")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("quest/send-daily-quest-notifications"));
+    }
+    
     @DisplayName("API - 퀘스트 추천")
     void recommendQuestsTest() throws Exception {
         doReturn(new QuestRecommendResponse(List.of(10L, 20L, 30L))).when(questService).recommendQuests(testUser.getId());

@@ -46,6 +46,12 @@ public class QuestController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/notification")
+    public ResponseEntity<Void> sendDailyQuestNotifications() {
+        questService.sendDailyQuestNotifications();
+        return ResponseEntity.ok().build();
+    }
+  
     @GetMapping("/recommend")
     public ResponseEntity<QuestRecommendResponse> recommendQuests(@CurrentUser Long userId) throws JsonProcessingException {
         return ResponseEntity.ok(questService.recommendQuests(userId));

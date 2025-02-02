@@ -43,6 +43,14 @@ public class UserQuestLogEntity {
         return new UserQuestLogResponse(questResponse.id(), questResponse.iconUrl(), questResponse.title(), questResponse.maxCount(), isDone);
     }
 
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public QuestEntity getQuest() {
+        return quest;
+    }    
+    
     public UserQuestLogForPrompt toPromptData() {
         QuestResponse questResponse = quest.toDto();
         return new UserQuestLogForPrompt(questResponse.id(), questResponse.title(), selectedDate, isDone);

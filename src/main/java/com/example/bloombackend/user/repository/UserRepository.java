@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import com.example.bloombackend.user.entity.UserEntity;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Long>, UserRepositoryCustom {
 	Optional<UserEntity> findBySnsId(String snsId);
 }
