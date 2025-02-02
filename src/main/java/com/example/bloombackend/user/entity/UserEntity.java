@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.example.bloombackend.oauth.OAuthProvider;
+import com.example.bloombackend.user.controller.dto.response.UserInfoResponse;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "user")
+@Table(name = "users")
 public class UserEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,8 +46,9 @@ public class UserEntity {
 	@Column(name = "gender")
 	private Gender gender;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "age")
-	private Integer age;
+	private Age age;
 
 	@CreationTimestamp
 	@Column(name = "created_at", updatable = false)
@@ -56,6 +58,9 @@ public class UserEntity {
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
 
+	@Column(name = "is_servey")
+	private boolean isSurvey = false;
+
 	@Builder
 	public UserEntity(OAuthProvider provider, String name, String snsId) {
 		this.provider = provider;
@@ -63,11 +68,15 @@ public class UserEntity {
 		this.snsId = snsId;
 	}
 
-	public void updateUserSurveyInfo(String newName, int age, Gender gender, String email) {
+	public void updateUserSurveyInfo(String newName, Age age, Gender gender, boolean isSurvey) {
 		this.name = newName;
 		this.age = age;
 		this.gender = gender;
-		this.email = email;
+		this.isSurvey = true;
+	}
+
+	public UserInfoResponse getUserInfo() {
+		return new UserInfoResponse(name, age.toString(), gender.toString(), isSurvey);
 	}
 
 	public Long getId() {
