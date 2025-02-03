@@ -1,0 +1,43 @@
+= API 문서
+BloomBackend Team
+2025-02-03
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== 오늘의 명언 API
+
+=== 1. 오늘의 명언 조회 API
+
+==== HTTP request
+
+include::{snippets}/quote/get-today-quote/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/quote/get-today-quote/http-response.adoc[]
+
+==== response body
+
+include::{snippets}/quote/get-today-quote/response-fields.adoc[]
+
+=== 2. 명언 데이터가 존재하지 않는 경우
+
+==== HTTP response
+
+include::{snippets}/quote/get-today-quote-no-data/http-response.adoc[]
+
+==== response body
+
+include::{snippets}/quote/get-today-quote-no-data/response-fields.adoc[]
+
+=== 3. 오늘 날짜의 아이디의 명언이 존재하지 않는 경우
+
+==== HTTP response
+
+include::{snippets}/quote/get-today-quote-not-found/http-response.adoc[]
+
+==== response body
+
+include::{snippets}/quote/get-today-quote-not-found/response-fields.adoc[]
+
