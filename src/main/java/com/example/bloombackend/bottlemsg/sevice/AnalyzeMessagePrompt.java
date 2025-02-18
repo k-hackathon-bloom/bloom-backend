@@ -12,6 +12,6 @@ public class AnalyzeMessagePrompt {
 		+ "| 외로움      | 60    |\n"
 		+ "| 부정적 영향여부 |\n"
 		+ "| ------------ |\n"
-		+ "|	 UPEER	  | 이 예시 포멧의 표만 보여줘";
+		+ "|	 UPPER	  | 이 예시 포멧의 표만 보여줘";
 
 }

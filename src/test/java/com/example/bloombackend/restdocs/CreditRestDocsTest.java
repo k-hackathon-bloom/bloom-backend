@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import com.example.bloombackend.oauth.util.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,6 @@ import com.example.bloombackend.credit.controller.dto.request.PurchaseRequest;
 import com.example.bloombackend.credit.entity.CreditType;
 import com.example.bloombackend.credit.entity.UserCreditEntity;
 import com.example.bloombackend.credit.repository.UserCreditRepository;
-import com.example.bloombackend.global.config.JwtTokenProvider;
 import com.example.bloombackend.item.entity.items.SeedEntity;
 import com.example.bloombackend.item.repository.SeedRepository;
 import com.example.bloombackend.oauth.OAuthProvider;
@@ -73,6 +73,7 @@ public class CreditRestDocsTest {
 		mockToken = "jwtToken";
 		testUser = userRepository.save(new UserEntity(OAuthProvider.KAKAO, "testUser", "testId"));
 		doReturn(testUser.getId()).when(jwtTokenProvider).getUserIdFromToken(mockToken);
+		doNothing().when(jwtTokenProvider).validateAccessToken(mockToken);
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		String limitDate = "2025-01-01";
