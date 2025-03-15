@@ -1,10 +1,12 @@
 package com.example.bloombackend.achievement.service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,14 +38,16 @@ public class AchievementService {
 	private final UserRepository userRepository;
 	private final AIUtil aiUtil;
 	private final ObjectMapper objectMapper;
+	private final RedisTemplate<String, String> redisTemplate;
 
 	public AchievementService(DailyAchievementRepository dailyAchievementRepository, SeedRepository seedRepository,
-		UserRepository userRepository, AIUtil aiUtil, ObjectMapper objectMapper) {
+		UserRepository userRepository, AIUtil aiUtil, ObjectMapper objectMapper,  RedisTemplate<String, String> redisTemplate) {
 		this.dailyAchievementRepository = dailyAchievementRepository;
 		this.seedRepository = seedRepository;
 		this.userRepository = userRepository;
 		this.aiUtil = aiUtil;
 		this.objectMapper = objectMapper;
+		this.redisTemplate = redisTemplate;
 	}
 
 	@Transactional
@@ -106,7 +110,7 @@ public class AchievementService {
 	public RecentSixMonthDataResponse getRecentSixMonthsAchievements(Long userId) {
 		List<MonthlyAchievementResponse> monthlyAchievements = getMonthlyAchievements(userId);
 		double averageBloomed = calculateAverageBloomed(monthlyAchievements);
-		String summary = generateAchievementSummary(monthlyAchievements, averageBloomed);
+		String summary = getAchievementSummary(monthlyAchievements, averageBloomed, userId);
 		return new RecentSixMonthDataResponse(monthlyAchievements, averageBloomed, summary);
 	}
 
@@ -121,11 +125,36 @@ public class AchievementService {
 			.orElse(0);
 	}
 
+	private String getAchievementSummary(List<MonthlyAchievementResponse> monthlyAchievements,
+										 double averageBloomed, Long userId) {
+		String cachedSummary = getCachedSummary(userId);
+		if (cachedSummary != null) return cachedSummary;
+		String summary = generateAchievementSummary(monthlyAchievements, averageBloomed);
+		saveCachedSummary(userId, summary);
+		return summary;
+	}
+
 	private String generateAchievementSummary(List<MonthlyAchievementResponse> monthlyAchievements,
 		double averageBloomed) {
 		String monthlyData = serializeMonthlyAchievements(monthlyAchievements);
 		String prompt = createAIPrompt(monthlyData, averageBloomed);
-		return aiUtil.generateCompletion(prompt);
+        return aiUtil.generateCompletion(prompt);
+	}
+
+	private String getCachedSummary(Long userId) {
+		String key = getSummaryCacheKey(userId);
+		return redisTemplate.opsForValue().get(key);
+	}
+
+	private void saveCachedSummary(Long userId, String summary) {
+		String key = getSummaryCacheKey(userId);
+		long secondsUntilMidnight = Duration.between(LocalDateTime.now(),
+				LocalDate.now().plusDays(1).atStartOfDay()).getSeconds();
+		redisTemplate.opsForValue().set(key, summary, Duration.ofSeconds(secondsUntilMidnight));
+	}
+
+	private String getSummaryCacheKey(Long userId) {
+        return "ai:achievement:" + userId + ":" + LocalDate.now();
 	}
 
 	private String serializeMonthlyAchievements(List<MonthlyAchievementResponse> monthlyAchievements) {

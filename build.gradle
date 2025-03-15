@@ -58,6 +58,10 @@ dependencies {
 
     //JSONObject
     implementation 'org.json:json:20230227'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 }
 
 def querydslDir = "build/generated/querydsl"
