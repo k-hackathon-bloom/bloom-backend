@@ -93,25 +93,25 @@ public class AchievementRestDocsTest {
 				.price(300).build()
 		);
 
-		// 7월 성취도 기록 생성
+		// 1월 성취도 기록 생성
 		for (int day = 1; day <= 10; day++) {
 			DailyAchievementEntity achievement = new DailyAchievementEntity(testUser, flowerEntity);
-			createAchievement(achievement, LocalDateTime.of(2024, 7, day, 0, 0), 9);  // 7월 1일부터 5일까지 성취도 9
+			createAchievement(achievement, LocalDateTime.of(2025, 1, day, 0, 0), 9);  // 7월 1일부터 5일까지 성취도 9
 		}
 
-		// 8월 성취도 기록 생성
+		// 2월 성취도 기록 생성
 		for (int day = 1; day <= 15; day++) {
 			DailyAchievementEntity achievement = new DailyAchievementEntity(testUser, flowerEntity);
-			createAchievement(achievement, LocalDateTime.of(2024, 8, day, 0, 0), 9);  // 8월 1일부터 5일까지 성취도 9
+			createAchievement(achievement, LocalDateTime.of(2025, 2, day, 0, 0), 9);  // 8월 1일부터 5일까지 성취도 9
 		}
 
-		// 9월 성취도 기록 생성
+		// 3월 성취도 기록 생성
 		DailyAchievementEntity achievement1 = new DailyAchievementEntity(testUser, flowerEntity);
 		DailyAchievementEntity achievement2 = new DailyAchievementEntity(testUser, flowerEntity);
 		DailyAchievementEntity achievement3 = new DailyAchievementEntity(testUser, flowerEntity);
-		createAchievement(achievement1, LocalDateTime.of(2024, 9, 1, 0, 0), 4);
-		createAchievement(achievement2, LocalDateTime.of(2024, 9, 2, 0, 0), 8);
-		createAchievement(achievement3, LocalDateTime.of(2024, 9, 7, 0, 0), 9);
+		createAchievement(achievement1, LocalDateTime.of(2025, 3, 1, 0, 0), 4);
+		createAchievement(achievement2, LocalDateTime.of(2025, 3, 2, 0, 0), 8);
+		createAchievement(achievement3, LocalDateTime.of(2025, 3, 7, 0, 0), 9);
 	}
 
 	@Test
@@ -162,7 +162,7 @@ public class AchievementRestDocsTest {
 		//when & then
 		mockMvc.perform(get("/api/achievement/monthly")
 				.header("Authorization", mockToken)
-				.param("month", "2024-09"))
+				.param("month", "2025-01"))
 			.andExpect(status().isOk())
 			.andDo(document("achievement/get-monthly-achievements",
 				queryParameters(

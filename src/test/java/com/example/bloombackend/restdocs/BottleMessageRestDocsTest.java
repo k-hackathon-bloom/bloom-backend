@@ -5,6 +5,7 @@ import com.example.bloombackend.bottlemsg.controller.dto.request.CreateBottleMes
 import com.example.bloombackend.bottlemsg.entity.*;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageLogRepository;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageRepository;
+import com.example.bloombackend.bottlemsg.repository.PostcardRepository;
 import com.example.bloombackend.claude.service.ClaudeService;
 import com.example.bloombackend.oauth.OAuthProvider;
 import com.example.bloombackend.oauth.util.JwtTokenProvider;
@@ -51,6 +52,9 @@ public class BottleMessageRestDocsTest {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private PostcardRepository postcardRepository;
+
 	@SpyBean
 	private JwtTokenProvider jwtTokenProvider;
 
@@ -68,6 +72,8 @@ public class BottleMessageRestDocsTest {
 	private BottleMessageEntity bottleMessage1;
 
 	private BottleMessageEntity bottleMessage2;
+
+	private PostcardEntity postcard1;
 
 	@Autowired
 	private ParameterNamesModule parameterNamesModule;
@@ -93,13 +99,17 @@ public class BottleMessageRestDocsTest {
 		// 외부 API 호출의 경우 테스트 시 Mocking 처리
 		doReturn(messageAnalysis).when(claudeService).callClaudeForSentimentAnalysis(anyString());
 
+		postcard1 = postcardRepository.save(
+				PostcardEntity.builder()
+						.postcardUrl("https://domain/bottle-message-poster/letter-paper-1.jpg").build()
+		);
+
 		bottleMessage1 = bottleMessageRepository.save(
 			BottleMessageEntity.builder()
 				.user(testSender)
 				.title("내일은 또 다른날")
 				.content("오늘은 금요일 내일은 토요일")
-				.postcardUrl(
-					"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg")
+				.postcard(postcard1)
 				.negativity(Negativity.LOWER)
 				.build()
 		);
@@ -108,8 +118,7 @@ public class BottleMessageRestDocsTest {
 				.user(testSender)
 				.title("모두모두 화이팅")
 				.content("모두 모두 화이팅")
-				.postcardUrl(
-					"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg")
+				.postcard(postcard1)
 				.negativity(Negativity.LOWER)
 				.build()
 		);
@@ -119,8 +128,7 @@ public class BottleMessageRestDocsTest {
 	@DisplayName("API - 유리병 메시지 등록")
 	void createBottleMessageTest() throws Exception {
 		//given
-		CreateBottleMessageRequest request = new CreateBottleMessageRequest("힘든하루였지만", "보람차",
-			"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg");
+		CreateBottleMessageRequest request = new CreateBottleMessageRequest("힘든하루였지만", "보람차",postcard1.getId());
 
 		//when & then
 		mockMvc.perform(post("/api/bottle-messages")
@@ -132,7 +140,7 @@ public class BottleMessageRestDocsTest {
 				requestFields(
 					fieldWithPath("title").description("등록할 유리병 메시지 제목"),
 					fieldWithPath("content").description("등록할 유리병 메시지 내용"),
-					fieldWithPath("postCard").description("선택한 편지지 url")
+					fieldWithPath("postcardId").description("선택한 편지지 ID")
 				),
 				responseFields(
 					fieldWithPath("id").description("등록한 유리병 메시지 아이디"),
@@ -305,16 +313,14 @@ public class BottleMessageRestDocsTest {
 			.user(testUser)
 			.title("내일은 또 다른날")
 			.content("오늘은 금요일 내일은 토요일")
-			.postcardUrl(
-				"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg")
+			.postcard(postcard1)
 			.negativity(Negativity.LOWER)
 			.build();
 		bottleMessage2 = BottleMessageEntity.builder()
 			.user(testUser)
 			.title("다 죽어버렸으면")
 			.content("힘들다")
-			.postcardUrl(
-				"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg")
+			.postcard(postcard1)
 			.negativity(Negativity.UPPER)
 			.build();
 		bottleMessageRepository.saveAll(List.of(bottleMessage1, bottleMessage2));
@@ -372,8 +378,7 @@ public class BottleMessageRestDocsTest {
 			.user(testUser)
 			.title("내일은 또 다른날")
 			.content("오늘은 금요일 내일은 토요일")
-			.postcardUrl(
-				"https://bloom-bucket-8430.s3.ap-northeast-2.amazonaws.com/postCard/KakaoTalk_20240919_002957024_01.jpg")
+			.postcard(postcard1)
 			.negativity(Negativity.LOWER)
 			.build());
 
@@ -387,5 +392,22 @@ public class BottleMessageRestDocsTest {
 					fieldWithPath("sentAt").description("최근 전송한 시간")
 				)
 			));
+	}
+
+	@Test
+	@DisplayName("API - 모든 편지지 목록 조회")
+	void getAllPostcard() throws Exception {
+		//when & then
+		mockMvc.perform(get("/api/postcard/all")
+						.header("Authorization", mockToken)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("api-bottle-message-test/get-all-postcard",
+						responseFields(
+								fieldWithPath("postcards[]").description("편지지 목록"),
+								fieldWithPath("postcards[].id").description("편지지 아이디"),
+								fieldWithPath("postcards[].url").description("편지지 url")
+						)
+				));
 	}
 }
