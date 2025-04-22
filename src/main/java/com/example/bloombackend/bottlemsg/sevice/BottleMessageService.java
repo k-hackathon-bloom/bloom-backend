@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import com.example.bloombackend.bottlemsg.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +25,6 @@ import com.example.bloombackend.bottlemsg.controller.dto.response.Info.SentBottl
 import com.example.bloombackend.bottlemsg.controller.dto.response.ReceivedBottleMessagesResponse;
 import com.example.bloombackend.bottlemsg.controller.dto.response.RecentSentAtResponse;
 import com.example.bloombackend.bottlemsg.controller.dto.response.SentBottleMessageResponse;
-import com.example.bloombackend.bottlemsg.entity.BottleMessageEntity;
-import com.example.bloombackend.bottlemsg.entity.BottleMessageReaction;
-import com.example.bloombackend.bottlemsg.entity.BottleMessageReceiptLog;
-import com.example.bloombackend.bottlemsg.entity.Negativity;
-import com.example.bloombackend.bottlemsg.entity.ReactionType;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageLogRepository;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageReactionRepository;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageRepository;
@@ -45,17 +41,19 @@ public class BottleMessageService {
 	private final UserService userService;
 	private final BottleMessageReactionRepository bottleMessageReactionRepository;
 	private final ClaudeService claudeService;
+	private final PostcardService postcardService;
 
 	@Autowired
 	public BottleMessageService(BottleMessageRepository bottleMessageRepository,
-		BottleMessageLogRepository bottleMessageLogRepository, UserService userService,
-		BottleMessageReactionRepository bottleMessageReactionRepository, ClaudeService claudeService) {
+                                BottleMessageLogRepository bottleMessageLogRepository, UserService userService,
+                                BottleMessageReactionRepository bottleMessageReactionRepository, ClaudeService claudeService, PostcardService postcardService) {
 		this.bottleMessageRepository = bottleMessageRepository;
 		this.bottleMessageLogRepository = bottleMessageLogRepository;
 		this.userService = userService;
 		this.bottleMessageReactionRepository = bottleMessageReactionRepository;
 		this.claudeService = claudeService;
-	}
+        this.postcardService = postcardService;
+    }
 
 	@Transactional
 	public CreateBottleMessageResponse createBottleMessage(Long userId, CreateBottleMessageRequest request) {
@@ -64,7 +62,7 @@ public class BottleMessageService {
 			.content(request.content())
 			.user(userService.findUserById(userId))
 			.title(request.title())
-			.postcardUrl(request.postCard())
+			.postcard(postcardService.getPostcardEntity(request.postcardId()))
 			.negativity(Negativity.valueOf(analyze.negativeImpact()))
 			.build()).getId(), analyze);
 	}
