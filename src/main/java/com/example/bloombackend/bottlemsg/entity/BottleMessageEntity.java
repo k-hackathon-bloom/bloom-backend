@@ -44,8 +44,9 @@ public class BottleMessageEntity {
 	@Column(name = "content", length = 500, nullable = false)
 	private String content;
 
-	@Column(name = "postcard_url", nullable = false)
-	private String postcardUrl;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "postcard_id")
+	private PostcardEntity postcard;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "negativity")
@@ -57,12 +58,12 @@ public class BottleMessageEntity {
 	private LocalDateTime createdAt;
 
 	@Builder
-	public BottleMessageEntity(UserEntity user, String content, String title, String postcardUrl,
+	public BottleMessageEntity(UserEntity user, String content, String title, PostcardEntity postcard,
 		Negativity negativity) {
 		this.sender = user;
 		this.content = content;
 		this.title = title;
-		this.postcardUrl = postcardUrl;
+		this.postcard = postcard;
 		this.negativity = negativity;
 	}
 
@@ -71,7 +72,7 @@ public class BottleMessageEntity {
 			.messageId(id)
 			.content(content)
 			.title(title)
-			.postCardUrl(postcardUrl)
+			.postCardUrl(postcard.getPostcardUrl())
 			.negativity(negativity.name())
 			.build();
 	}
@@ -80,7 +81,7 @@ public class BottleMessageEntity {
 		return BottleMessageSummaryInfo.builder()
 			.messageId(id)
 			.title(title)
-			.postCardUrl(postcardUrl)
+			.postCardUrl(postcard.getPostcardUrl())
 			.negativity(negativity.name())
 			.build();
 	}
