@@ -31,7 +31,7 @@ public class AIUtil {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         Map<String, Object> requestBody = Map.of(
-            "model", "claude-3-sonnet-20240229",
+            "model", "claude-3-5-haiku-20241022",
             "max_tokens", 300,
             "messages", List.of(Map.of(
                 "role", "user",
