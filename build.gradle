@@ -64,6 +64,8 @@ dependencies {
 
 }
 
+// QUERYDSL
+
 def querydslDir = "build/generated/querydsl"
 
 sourceSets {
@@ -78,29 +80,28 @@ clean.doLast {
     file(querydslDir).deleteDir()
 }
 
+// RESTDOCS
 
-ext {
-    snippetsDir = file('build/generated-snippets')
+ext { // 스니펫 저장 경로 설정
+    snippetsDir = file("build/generated-snippets")
+    docsOutputDir = layout.buildDirectory.dir("docs/asciidoc")
 }
 
-test {
+test { // 테스트 실행 시 스니펫 생성
     outputs.dir snippetsDir
+    useJUnitPlatform()
 }
 
-asciidoctor {
-    inputs.dir snippetsDir
+asciidoctor { // asciidoctor를 실행해 adoc 문서를 HTML로 변환
     dependsOn test
+    inputs.dir snippetsDir
     configurations 'asciidoctorExtensions'
+    outputDir = docsOutputDir.get().asFile
 }
 
 bootJar {
-    dependsOn asciidoctor
-    copy {
-        from("${asciidoctor.outputDir}")
-        into 'src/main/resources/static/docs'
+    dependsOn asciidoctor // 최종 JAR 파일에 정적 문서 포함
+    from(docsOutputDir) {
+        into("static/docs")
     }
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
 }
