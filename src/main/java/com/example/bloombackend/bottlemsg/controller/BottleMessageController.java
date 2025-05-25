@@ -17,7 +17,7 @@ import com.example.bloombackend.bottlemsg.controller.dto.response.CreateBottleMe
 import com.example.bloombackend.bottlemsg.controller.dto.response.ReceivedBottleMessagesResponse;
 import com.example.bloombackend.bottlemsg.controller.dto.response.RecentSentAtResponse;
 import com.example.bloombackend.bottlemsg.controller.dto.response.SentBottleMessageResponse;
-import com.example.bloombackend.bottlemsg.sevice.BottleMessageService;
+import com.example.bloombackend.bottlemsg.service.BottleMessageService;
 import com.example.bloombackend.global.config.annotation.CurrentUser;
 
 @RestController
@@ -33,6 +33,7 @@ public class BottleMessageController {
 	public ResponseEntity<CreateBottleMessageResponse> createBottleMessage(
 		@CurrentUser Long userId,
 		@RequestBody CreateBottleMessageRequest request) {
+
 		return ResponseEntity.ok(bottleMessageService.createBottleMessage(userId, request));
 	}
 
