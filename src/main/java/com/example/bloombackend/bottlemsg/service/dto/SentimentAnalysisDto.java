@@ -1,4 +1,4 @@
-package com.example.bloombackend.claude.dto;
+package com.example.bloombackend.bottlemsg.service.dto;
 
 import java.util.List;
 
