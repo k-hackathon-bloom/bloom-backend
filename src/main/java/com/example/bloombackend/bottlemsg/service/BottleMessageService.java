@@ -1,99 +1,76 @@
-package com.example.bloombackend.bottlemsg.sevice;
+package com.example.bloombackend.bottlemsg.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import com.example.bloombackend.bottlemsg.controller.dto.response.*;
 import com.example.bloombackend.bottlemsg.entity.*;
+import com.example.bloombackend.global.AIUtil;
+import com.example.bloombackend.global.event.BottleMessageCreatedEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.bloombackend.bottlemsg.controller.dto.request.CreateBottleMessageReactionRequest;
 import com.example.bloombackend.bottlemsg.controller.dto.request.CreateBottleMessageRequest;
-import com.example.bloombackend.bottlemsg.controller.dto.response.BottleMessageDetailResponse;
-import com.example.bloombackend.bottlemsg.controller.dto.response.BottleMessageReactionResponse;
-import com.example.bloombackend.bottlemsg.controller.dto.response.CreateBottleMessageResponse;
 import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMessageLogInfo;
 import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMessageSummaryInfo;
 import com.example.bloombackend.bottlemsg.controller.dto.response.Info.BottleMessageWithDateLogInfo;
 import com.example.bloombackend.bottlemsg.controller.dto.response.Info.SentBottleMessageInfo;
-import com.example.bloombackend.bottlemsg.controller.dto.response.ReceivedBottleMessagesResponse;
-import com.example.bloombackend.bottlemsg.controller.dto.response.RecentSentAtResponse;
-import com.example.bloombackend.bottlemsg.controller.dto.response.SentBottleMessageResponse;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageLogRepository;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageReactionRepository;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageRepository;
-import com.example.bloombackend.claude.dto.EmotionScore;
-import com.example.bloombackend.claude.dto.SentimentAnalysisDto;
-import com.example.bloombackend.claude.service.ClaudeService;
+import com.example.bloombackend.bottlemsg.service.dto.SentimentAnalysisDto;
 import com.example.bloombackend.user.entity.UserEntity;
 import com.example.bloombackend.user.service.UserService;
 
+@Slf4j
 @Service
 public class BottleMessageService {
 	private final BottleMessageRepository bottleMessageRepository;
 	private final BottleMessageLogRepository bottleMessageLogRepository;
 	private final UserService userService;
 	private final BottleMessageReactionRepository bottleMessageReactionRepository;
-	private final ClaudeService claudeService;
 	private final PostcardService postcardService;
+	private final ApplicationEventPublisher eventPublisher;
 
 	@Autowired
 	public BottleMessageService(BottleMessageRepository bottleMessageRepository,
                                 BottleMessageLogRepository bottleMessageLogRepository, UserService userService,
-                                BottleMessageReactionRepository bottleMessageReactionRepository, ClaudeService claudeService, PostcardService postcardService) {
+                                BottleMessageReactionRepository bottleMessageReactionRepository, PostcardService postcardService, ApplicationEventPublisher eventPublisher, AIUtil aiUtil) {
 		this.bottleMessageRepository = bottleMessageRepository;
 		this.bottleMessageLogRepository = bottleMessageLogRepository;
-		this.userService = userService;
 		this.bottleMessageReactionRepository = bottleMessageReactionRepository;
-		this.claudeService = claudeService;
+		this.userService = userService;
         this.postcardService = postcardService;
+        this.eventPublisher = eventPublisher;
     }
 
 	@Transactional
 	public CreateBottleMessageResponse createBottleMessage(Long userId, CreateBottleMessageRequest request) {
-		SentimentAnalysisDto analyze = analysisMessage(createAIPrompt(request.content()));
-		return CreateBottleMessageResponse.of(bottleMessageRepository.save(BottleMessageEntity.builder()
-			.content(request.content())
-			.user(userService.findUserById(userId))
-			.title(request.title())
-			.postcard(postcardService.getPostcardEntity(request.postcardId()))
-			.negativity(Negativity.valueOf(analyze.negativeImpact()))
-			.build()).getId(), analyze);
+		BottleMessageEntity message = bottleMessageRepository.save(BottleMessageEntity.builder()
+						.content(request.content())
+						.user(userService.findUserById(userId))
+						.title(request.title())
+						.postcard(postcardService.getPostcardEntity(request.postcardId()))
+						.build());
+
+		CreateBottleMessageResponse response = CreateBottleMessageResponse.of(message.getId());
+		eventPublisher.publishEvent(new BottleMessageCreatedEvent(message.getId(), request.content()));
+
+		return response;
 	}
 
-	private String createAIPrompt(String content) {
-		return String.format(AnalyzeMessagePrompt.ANALYZE_MESSAGE_PROMPT, content);
-	}
-
-	private SentimentAnalysisDto analysisMessage(String content) {
-		String response = claudeService.callClaudeForSentimentAnalysis(content);
-		return parseSentimentString(response);
-	}
-
-	public SentimentAnalysisDto parseSentimentString(String input) {
-		List<EmotionScore> emotions = new ArrayList<>();
-
-		String[] lines = input.split("\n");
-
-		for (int i = 2; i < 5; i++) {
-			String line = lines[i].trim();
-			if (line.contains("|")) {
-				String[] columns = line.split("\\|");
-				if (columns.length >= 3) {
-					EmotionScore score = new EmotionScore(columns[1].trim(), Integer.parseInt(columns[2].trim()));
-					emotions.add(score);
-				}
-			}
-		}
-
-		String negativeImpactLine = lines[lines.length - 1].replace("|", "").trim();
-		return new SentimentAnalysisDto(emotions, negativeImpactLine);
+	@Transactional
+	public void updateMessageAnalysisResult(Long messageId, SentimentAnalysisDto result) {
+		BottleMessageEntity message = getBottleMessageEntity(messageId);
+		message.updateNegativity(Negativity.valueOf(result.negativeImpact()));
 	}
 
 	@Transactional

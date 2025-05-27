@@ -1,8 +1,7 @@
 package com.example.bloombackend.bottlemsg.controller;
 
 import com.example.bloombackend.bottlemsg.controller.dto.response.PostcardsResponse;
-import com.example.bloombackend.bottlemsg.controller.dto.response.ReceivedBottleMessagesResponse;
-import com.example.bloombackend.bottlemsg.sevice.PostcardService;
+import com.example.bloombackend.bottlemsg.service.PostcardService;
 import com.example.bloombackend.global.config.annotation.CurrentUser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

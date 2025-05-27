@@ -1,6 +1,7 @@
 package com.example.bloombackend.bottlemsg.entity;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -58,13 +59,11 @@ public class BottleMessageEntity {
 	private LocalDateTime createdAt;
 
 	@Builder
-	public BottleMessageEntity(UserEntity user, String content, String title, PostcardEntity postcard,
-		Negativity negativity) {
+	public BottleMessageEntity(UserEntity user, String content, String title, PostcardEntity postcard) {
 		this.sender = user;
 		this.content = content;
 		this.title = title;
 		this.postcard = postcard;
-		this.negativity = negativity;
 	}
 
 	public BottleMessageInfo toDetailInfo() {
@@ -73,7 +72,7 @@ public class BottleMessageEntity {
 			.content(content)
 			.title(title)
 			.postCardUrl(postcard.getPostcardUrl())
-			.negativity(negativity.name())
+			.negativity(Optional.ofNullable(negativity).map(Enum::name))
 			.build();
 	}
 
@@ -82,7 +81,11 @@ public class BottleMessageEntity {
 			.messageId(id)
 			.title(title)
 			.postCardUrl(postcard.getPostcardUrl())
-			.negativity(negativity.name())
+			.negativity(Optional.ofNullable(negativity).map(Enum::name))
 			.build();
+	}
+
+	public void updateNegativity(Negativity negativity){
+		this.negativity = negativity;
 	}
 }

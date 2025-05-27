@@ -1,4 +1,4 @@
-package com.example.bloombackend.claude.dto;
+package com.example.bloombackend.bottlemsg.service.dto;
 
 public record EmotionScore(String emotion, int percentage) {
 }

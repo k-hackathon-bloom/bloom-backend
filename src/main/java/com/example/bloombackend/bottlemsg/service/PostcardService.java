@@ -1,4 +1,4 @@
-package com.example.bloombackend.bottlemsg.sevice;
+package com.example.bloombackend.bottlemsg.service;
 
 import com.example.bloombackend.bottlemsg.controller.dto.response.PostcardsResponse;
 import com.example.bloombackend.bottlemsg.entity.PostcardEntity;
@@ -7,12 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PostcardService {
     private final PostcardRepository postcardRepository;
-
 
     public PostcardService(PostcardRepository postcardRepository) {
         this.postcardRepository = postcardRepository;
