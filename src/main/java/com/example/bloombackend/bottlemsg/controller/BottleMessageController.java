@@ -1,22 +1,11 @@
 package com.example.bloombackend.bottlemsg.controller;
 
+import com.example.bloombackend.bottlemsg.controller.dto.response.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.bloombackend.bottlemsg.controller.dto.request.CreateBottleMessageReactionRequest;
 import com.example.bloombackend.bottlemsg.controller.dto.request.CreateBottleMessageRequest;
-import com.example.bloombackend.bottlemsg.controller.dto.response.BottleMessageDetailResponse;
-import com.example.bloombackend.bottlemsg.controller.dto.response.BottleMessageReactionResponse;
-import com.example.bloombackend.bottlemsg.controller.dto.response.CreateBottleMessageResponse;
-import com.example.bloombackend.bottlemsg.controller.dto.response.ReceivedBottleMessagesResponse;
-import com.example.bloombackend.bottlemsg.controller.dto.response.RecentSentAtResponse;
-import com.example.bloombackend.bottlemsg.controller.dto.response.SentBottleMessageResponse;
 import com.example.bloombackend.bottlemsg.service.BottleMessageService;
 import com.example.bloombackend.global.config.annotation.CurrentUser;
 
@@ -83,10 +72,18 @@ public class BottleMessageController {
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/recent-send-time")
-	public ResponseEntity<RecentSentAtResponse> getRecentSendTime(
-		@CurrentUser Long userId
+	@PatchMapping("/{messageId}/hide")
+	public ResponseEntity<Void> hideSentBottleMessage(
+			@CurrentUser Long userId,
+			@PathVariable("messageId") Long messageId) {
+		bottleMessageService.hideSentMessage(messageId);
+		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping("/available")
+	public ResponseEntity<IsAvailableSender> getIsAvailable(
+			@CurrentUser Long userId
 	) {
-		return ResponseEntity.ok(bottleMessageService.getRecentSendTime(userId));
+		return ResponseEntity.ok(bottleMessageService.getIsAvailableSender(userId));
 	}
 }

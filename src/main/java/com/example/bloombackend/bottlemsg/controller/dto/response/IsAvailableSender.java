@@ -1,4 +1,4 @@
 package com.example.bloombackend.bottlemsg.controller.dto.response;
 
-public record RecentSentAtResponse(String sentAt) {
+public record IsAvailableSender(boolean isAvailableSender) {
 }

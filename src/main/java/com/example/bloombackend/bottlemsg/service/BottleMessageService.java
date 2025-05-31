@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import com.example.bloombackend.bottlemsg.controller.dto.response.*;
 import com.example.bloombackend.bottlemsg.entity.*;
+import com.example.bloombackend.bottlemsg.repository.BottleMessageSentLogRepository;
 import com.example.bloombackend.global.AIUtil;
 import com.example.bloombackend.global.event.BottleMessageCreatedEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ import com.example.bloombackend.user.service.UserService;
 public class BottleMessageService {
 	private final BottleMessageRepository bottleMessageRepository;
 	private final BottleMessageLogRepository bottleMessageLogRepository;
+	private final BottleMessageSentLogRepository bottleMessageSentLogRepository;
 	private final UserService userService;
 	private final BottleMessageReactionRepository bottleMessageReactionRepository;
 	private final PostcardService postcardService;
@@ -43,13 +45,14 @@ public class BottleMessageService {
 	@Autowired
 	public BottleMessageService(BottleMessageRepository bottleMessageRepository,
                                 BottleMessageLogRepository bottleMessageLogRepository, UserService userService,
-                                BottleMessageReactionRepository bottleMessageReactionRepository, PostcardService postcardService, ApplicationEventPublisher eventPublisher, AIUtil aiUtil) {
+                                BottleMessageReactionRepository bottleMessageReactionRepository, PostcardService postcardService, ApplicationEventPublisher eventPublisher, AIUtil aiUtil, BottleMessageSentLogRepository bottleMessageSentLogRepository) {
 		this.bottleMessageRepository = bottleMessageRepository;
 		this.bottleMessageLogRepository = bottleMessageLogRepository;
 		this.bottleMessageReactionRepository = bottleMessageReactionRepository;
 		this.userService = userService;
         this.postcardService = postcardService;
         this.eventPublisher = eventPublisher;
+        this.bottleMessageSentLogRepository = bottleMessageSentLogRepository;
     }
 
 	@Transactional
@@ -62,9 +65,14 @@ public class BottleMessageService {
 						.build());
 
 		CreateBottleMessageResponse response = CreateBottleMessageResponse.of(message.getId());
+		createBottleMessageSentLog(message);
 		eventPublisher.publishEvent(new BottleMessageCreatedEvent(message.getId(), request.content()));
 
 		return response;
+	}
+
+	public void createBottleMessageSentLog(BottleMessageEntity message){
+		bottleMessageSentLogRepository.save(BottleMessageSentLog.builder().message(message).build());
 	}
 
 	@Transactional
@@ -169,8 +177,10 @@ public class BottleMessageService {
 
 	@Transactional(readOnly = true)
 	public SentBottleMessageResponse getSentBottleMessages(Long userId) {
-		List<BottleMessageEntity> sentMessages = bottleMessageRepository.findBySenderId(userId);
-		return getSentMessagesResponse(sentMessages);
+		List<BottleMessageSentLog> sentMessageLogs =
+				bottleMessageSentLogRepository.findBySenderIdAndIsHide(userId,false);
+		List<BottleMessageEntity> messages = sentMessageLogs.stream().map(BottleMessageSentLog::getMessage).toList();
+		return getSentMessagesResponse(messages);
 	}
 
 	private SentBottleMessageResponse getSentMessagesResponse(List<BottleMessageEntity> bottleMessageEntities) {
@@ -193,15 +203,23 @@ public class BottleMessageService {
 			.orElseThrow(() -> new NoSuchElementException("Message with ID " + messageId + " not found."));
 	}
 
+	@Transactional
+	public void hideSentMessage(Long messageId) {
+		BottleMessageSentLog messageSentLog = bottleMessageSentLogRepository.findByMessageId(messageId)
+				.orElseThrow(() -> new NoSuchElementException("Message with ID " + messageId + " not found."));
+
+		messageSentLog.hide();
+	}
+
 	@Transactional(readOnly = true)
-	public RecentSentAtResponse getRecentSendTime(Long userId) {
-		Optional<BottleMessageEntity> recentMessage = bottleMessageRepository.findTopBySenderIdOrderByCreatedAtDesc(
-			userId);
-		if (recentMessage.isPresent()) {
-			String recentSentAt = localDateToString(recentMessage.get().getCreatedAt(), "yyyy-MM-dd HH:mm:ss");
-			return new RecentSentAtResponse(recentSentAt);
+	public IsAvailableSender getIsAvailableSender(Long userId) {
+		Optional<BottleMessageSentLog> todayMessage = bottleMessageRepository.findTodayLowerMessage(userId);
+
+		if (todayMessage.isPresent()) {
+			return new IsAvailableSender(true);
 		} else {
-			return new RecentSentAtResponse("작성한 글이 없습니다.");
+			return new IsAvailableSender(false);
 		}
 	}
+
 }
