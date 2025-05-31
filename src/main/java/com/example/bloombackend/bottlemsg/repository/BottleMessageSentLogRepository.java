@@ -5,8 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BottleMessageSentLogRepository extends JpaRepository<BottleMessageSentLog, Long> {
-    List<BottleMessageSentLog> findBySenderIdAndIsSaved(Long senderId, boolean isSaved);
+    Optional<BottleMessageSentLog> findByMessageId(Long messageId);
+    List<BottleMessageSentLog> findBySenderIdAndIsHide(Long senderId, boolean isHide);
+
 }

@@ -25,7 +25,7 @@ public class BottleMessageSentLog {
 
     @Column(name = "is_saved", nullable = false)
     @Getter
-    private Boolean isSaved = true;
+    private Boolean isHide = false;
 
     @Builder
     public BottleMessageSentLog(BottleMessageEntity message, Long senderId) {
@@ -33,7 +33,7 @@ public class BottleMessageSentLog {
         this.message = message;
     }
 
-    public void delete() {
-        this.isSaved = false;
+    public void hide() {
+        this.isHide = true;
     }
 }

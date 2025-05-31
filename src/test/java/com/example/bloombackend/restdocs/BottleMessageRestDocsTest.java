@@ -27,7 +27,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -343,8 +342,6 @@ public class BottleMessageRestDocsTest {
 		bottleMessage1.updateNegativity(Negativity.LOWER);
 		bottleMessage2.updateNegativity(Negativity.UPPER);
 
-		System.out.println("here"+bottleMessageSentLog1.getIsSaved().toString());
-
 		//when & then
 		mockMvc.perform(get("/api/bottle-messages/sent")
 				.header("Authorization", mockToken)
@@ -391,30 +388,6 @@ public class BottleMessageRestDocsTest {
 	}
 
 	@Test
-	@DisplayName("API - 최근 유리병 메시지를 보낸 시간")
-	void getRecentSendTime() throws Exception {
-		//given
-		BottleMessageEntity latestMessage = bottleMessageRepository.save(BottleMessageEntity.builder()
-			.user(testUser)
-			.title("내일은 또 다른날")
-			.content("오늘은 금요일 내일은 토요일")
-			.postcard(postcard1)
-			.build());
-
-
-		//when & then
-		mockMvc.perform(get("/api/bottle-messages/recent-send-time", latestMessage.getId())
-				.header("Authorization", mockToken)
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andDo(document("api-bottle-message-test/get-recent-send-time",
-				responseFields(
-					fieldWithPath("sentAt").description("최근 전송한 시간")
-				)
-			));
-	}
-
-	@Test
 	@DisplayName("API - 모든 편지지 목록 조회")
 	void getAllPostcard() throws Exception {
 		//when & then
@@ -427,6 +400,36 @@ public class BottleMessageRestDocsTest {
 								fieldWithPath("postcards[]").description("편지지 목록"),
 								fieldWithPath("postcards[].id").description("편지지 아이디"),
 								fieldWithPath("postcards[].url").description("편지지 url")
+						)
+				));
+	}
+
+	@Test
+	@DisplayName("API - 보낸 편지지 숨김 처리")
+	void hideSentMessage() throws Exception {
+		//when & then
+		mockMvc.perform(patch("/api/bottle-messages/{messageId}/hide", bottleMessage1.getId())
+						.header("Authorization", mockToken)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("api-bottle-message-test/hide-sent-message",
+						pathParameters(
+								parameterWithName("messageId").description("숨김할 메시지 아이디")
+						)
+				));
+	}
+
+	@Test
+	@DisplayName("API - 메시지 발신 가능여부 조회")
+	void getIsAvailableSender() throws Exception {
+		//when & then
+		mockMvc.perform(get("/api/bottle-messages/available", testSender.getId())
+						.header("Authorization", mockToken)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("api-bottle-message-test/is-available-sender",
+						responseFields(
+								fieldWithPath("isAvailableSender").description("발신가능여부")
 						)
 				));
 	}

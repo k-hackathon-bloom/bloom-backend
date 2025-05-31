@@ -173,3 +173,26 @@ include::{snippets}/api-bottle-message-test/get-all-postcard/http-response.adoc[
 
 include::{snippets}/api-bottle-message-test/get-all-postcard/response-fields.adoc[]
 
+=== 11. 보낸 유리병 메시지 숨김처리
+==== HTTP request
+
+include::{snippets}/api-bottle-message-test/hide-sent-message/http-request.adoc[]
+
+==== path parameter
+include::{snippets}/api-bottle-message-test/hide-sent-message/path-parameters.adoc[]
+
+==== HTTP response
+
+include::{snippets}/api-bottle-message-test/hide-sent-message/http-response.adoc[]
+
+
+=== 12. 메시지 발송가능 여부 조회
+==== HTTP request
+
+include::{snippets}/api-bottle-message-test/is-available-sender/http-request.adoc[]
+
+
+==== HTTP response
+
+include::{snippets}/api-bottle-message-test/is-available-sender/http-response.adoc[]
+

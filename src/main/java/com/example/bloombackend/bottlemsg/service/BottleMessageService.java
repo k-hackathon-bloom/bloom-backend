@@ -178,7 +178,7 @@ public class BottleMessageService {
 	@Transactional(readOnly = true)
 	public SentBottleMessageResponse getSentBottleMessages(Long userId) {
 		List<BottleMessageSentLog> sentMessageLogs =
-				bottleMessageSentLogRepository.findBySenderIdAndIsSaved(userId,true);
+				bottleMessageSentLogRepository.findBySenderIdAndIsHide(userId,false);
 		List<BottleMessageEntity> messages = sentMessageLogs.stream().map(BottleMessageSentLog::getMessage).toList();
 		return getSentMessagesResponse(messages);
 	}
@@ -203,15 +203,23 @@ public class BottleMessageService {
 			.orElseThrow(() -> new NoSuchElementException("Message with ID " + messageId + " not found."));
 	}
 
+	@Transactional
+	public void hideSentMessage(Long messageId) {
+		BottleMessageSentLog messageSentLog = bottleMessageSentLogRepository.findByMessageId(messageId)
+				.orElseThrow(() -> new NoSuchElementException("Message with ID " + messageId + " not found."));
+
+		messageSentLog.hide();
+	}
+
 	@Transactional(readOnly = true)
-	public RecentSentAtResponse getRecentSendTime(Long userId) {
-		Optional<BottleMessageEntity> recentMessage = bottleMessageRepository.findTopBySenderIdOrderByCreatedAtDesc(
-			userId);
-		if (recentMessage.isPresent()) {
-			String recentSentAt = localDateToString(recentMessage.get().getCreatedAt(), "yyyy-MM-dd HH:mm:ss");
-			return new RecentSentAtResponse(recentSentAt);
+	public IsAvailableSender getIsAvailableSender(Long userId) {
+		Optional<BottleMessageSentLog> todayMessage = bottleMessageRepository.findTodayLowerMessage(userId);
+
+		if (todayMessage.isPresent()) {
+			return new IsAvailableSender(true);
 		} else {
-			return new RecentSentAtResponse("작성한 글이 없습니다.");
+			return new IsAvailableSender(false);
 		}
 	}
+
 }
