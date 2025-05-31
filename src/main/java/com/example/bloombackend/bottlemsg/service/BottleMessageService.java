@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import com.example.bloombackend.bottlemsg.controller.dto.response.*;
 import com.example.bloombackend.bottlemsg.entity.*;
+import com.example.bloombackend.bottlemsg.repository.BottleMessageSentLogRepository;
 import com.example.bloombackend.global.AIUtil;
 import com.example.bloombackend.global.event.BottleMessageCreatedEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ import com.example.bloombackend.user.service.UserService;
 public class BottleMessageService {
 	private final BottleMessageRepository bottleMessageRepository;
 	private final BottleMessageLogRepository bottleMessageLogRepository;
+	private final BottleMessageSentLogRepository bottleMessageSentLogRepository;
 	private final UserService userService;
 	private final BottleMessageReactionRepository bottleMessageReactionRepository;
 	private final PostcardService postcardService;
@@ -43,13 +45,14 @@ public class BottleMessageService {
 	@Autowired
 	public BottleMessageService(BottleMessageRepository bottleMessageRepository,
                                 BottleMessageLogRepository bottleMessageLogRepository, UserService userService,
-                                BottleMessageReactionRepository bottleMessageReactionRepository, PostcardService postcardService, ApplicationEventPublisher eventPublisher, AIUtil aiUtil) {
+                                BottleMessageReactionRepository bottleMessageReactionRepository, PostcardService postcardService, ApplicationEventPublisher eventPublisher, AIUtil aiUtil, BottleMessageSentLogRepository bottleMessageSentLogRepository) {
 		this.bottleMessageRepository = bottleMessageRepository;
 		this.bottleMessageLogRepository = bottleMessageLogRepository;
 		this.bottleMessageReactionRepository = bottleMessageReactionRepository;
 		this.userService = userService;
         this.postcardService = postcardService;
         this.eventPublisher = eventPublisher;
+        this.bottleMessageSentLogRepository = bottleMessageSentLogRepository;
     }
 
 	@Transactional
@@ -62,9 +65,14 @@ public class BottleMessageService {
 						.build());
 
 		CreateBottleMessageResponse response = CreateBottleMessageResponse.of(message.getId());
+		createBottleMessageSentLog(message);
 		eventPublisher.publishEvent(new BottleMessageCreatedEvent(message.getId(), request.content()));
 
 		return response;
+	}
+
+	public void createBottleMessageSentLog(BottleMessageEntity message){
+		bottleMessageSentLogRepository.save(BottleMessageSentLog.builder().message(message).build());
 	}
 
 	@Transactional
