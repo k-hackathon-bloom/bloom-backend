@@ -5,6 +5,7 @@ import com.example.bloombackend.bottlemsg.controller.dto.request.CreateBottleMes
 import com.example.bloombackend.bottlemsg.entity.*;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageLogRepository;
 import com.example.bloombackend.bottlemsg.repository.BottleMessageRepository;
+import com.example.bloombackend.bottlemsg.repository.BottleMessageSentLogRepository;
 import com.example.bloombackend.bottlemsg.repository.PostcardRepository;
 import com.example.bloombackend.global.AIUtil;
 import com.example.bloombackend.oauth.OAuthProvider;
@@ -26,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -50,6 +52,9 @@ public class BottleMessageRestDocsTest {
 	private BottleMessageLogRepository bottleMessageLogRepository;
 
 	@Autowired
+	private BottleMessageSentLogRepository bottleMessageSentLogRepository;
+
+	@Autowired
 	private UserRepository userRepository;
 
 	@Autowired
@@ -72,6 +77,10 @@ public class BottleMessageRestDocsTest {
 	private BottleMessageEntity bottleMessage1;
 
 	private BottleMessageEntity bottleMessage2;
+
+	private BottleMessageSentLog bottleMessageSentLog1;
+
+	private BottleMessageSentLog bottleMessageSentLog2;
 
 	private PostcardEntity postcard1;
 
@@ -119,6 +128,20 @@ public class BottleMessageRestDocsTest {
 				.content("모두 모두 화이팅")
 				.postcard(postcard1)
 				.build()
+		);
+
+		bottleMessageSentLog1 = bottleMessageSentLogRepository.save(
+				BottleMessageSentLog.builder()
+						.message(bottleMessage1)
+						.senderId(testSender.getId())
+						.build()
+		);
+
+		bottleMessageSentLog2 = bottleMessageSentLogRepository.save(
+				BottleMessageSentLog.builder()
+						.message(bottleMessage2)
+						.senderId(testSender.getId())
+						.build()
 		);
 	}
 
@@ -306,23 +329,21 @@ public class BottleMessageRestDocsTest {
 	@DisplayName("API - 보낸 유리병 메시지 목록 조회")
 	void getSentBottleMessage() throws Exception {
 		//given
-		bottleMessage1 = BottleMessageEntity.builder()
-			.user(testUser)
-			.title("내일은 또 다른날")
-			.content("오늘은 금요일 내일은 토요일")
-			.postcard(postcard1)
-			.build();
-		bottleMessage2 = BottleMessageEntity.builder()
-			.user(testUser)
-			.title("다 죽어버렸으면")
-			.content("힘들다")
-			.postcard(postcard1)
-			.build();
+		BottleMessageSentLog log1 = BottleMessageSentLog.builder()
+				.senderId(testUser.getId())
+				.message(bottleMessage1)
+				.build();
 
-		bottleMessageRepository.saveAll(List.of(bottleMessage1, bottleMessage2));
+		BottleMessageSentLog log2 = BottleMessageSentLog.builder()
+				.senderId(testUser.getId())
+				.message(bottleMessage2)
+				.build();
+
+		bottleMessageSentLogRepository.saveAll(List.of(log1, log2));
 		bottleMessage1.updateNegativity(Negativity.LOWER);
-		bottleMessage1.updateNegativity(Negativity.UPPER);
+		bottleMessage2.updateNegativity(Negativity.UPPER);
 
+		System.out.println("here"+bottleMessageSentLog1.getIsSaved().toString());
 
 		//when & then
 		mockMvc.perform(get("/api/bottle-messages/sent")

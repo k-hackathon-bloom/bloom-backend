@@ -177,8 +177,10 @@ public class BottleMessageService {
 
 	@Transactional(readOnly = true)
 	public SentBottleMessageResponse getSentBottleMessages(Long userId) {
-		List<BottleMessageEntity> sentMessages = bottleMessageRepository.findBySenderId(userId);
-		return getSentMessagesResponse(sentMessages);
+		List<BottleMessageSentLog> sentMessageLogs =
+				bottleMessageSentLogRepository.findBySenderIdAndIsSaved(userId,true);
+		List<BottleMessageEntity> messages = sentMessageLogs.stream().map(BottleMessageSentLog::getMessage).toList();
+		return getSentMessagesResponse(messages);
 	}
 
 	private SentBottleMessageResponse getSentMessagesResponse(List<BottleMessageEntity> bottleMessageEntities) {

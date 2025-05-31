@@ -1,25 +1,35 @@
 package com.example.bloombackend.bottlemsg.entity;
 
-import com.example.bloombackend.user.entity.UserEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "bottle_message_sent_log")
 public class BottleMessageSentLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "receipt_id")
+    @Column(name = "sent_log_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "message_id", nullable = false)
+    @Getter
     private BottleMessageEntity message;
 
+    @Column(name ="sender_id")
+    private Long senderId;
+
     @Column(name = "is_saved", nullable = false)
-    private boolean isSaved = true;
+    @Getter
+    private Boolean isSaved = true;
 
     @Builder
-    public BottleMessageSentLog(BottleMessageEntity message, UserEntity recipient) {
+    public BottleMessageSentLog(BottleMessageEntity message, Long senderId) {
+        this.senderId = senderId;
         this.message = message;
     }
 
