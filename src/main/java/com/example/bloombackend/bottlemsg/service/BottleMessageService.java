@@ -71,8 +71,11 @@ public class BottleMessageService {
 		return response;
 	}
 
-	public void createBottleMessageSentLog(BottleMessageEntity message){
-		bottleMessageSentLogRepository.save(BottleMessageSentLog.builder().message(message).build());
+	public void createBottleMessageSentLog(BottleMessageEntity message,Long userId) {
+		bottleMessageSentLogRepository.save(BottleMessageSentLog.builder()
+				.message(message)
+				.senderId(userId)
+				.build());
 	}
 
 	@Transactional
