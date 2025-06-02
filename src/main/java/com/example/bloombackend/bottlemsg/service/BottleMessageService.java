@@ -65,14 +65,17 @@ public class BottleMessageService {
 						.build());
 
 		CreateBottleMessageResponse response = CreateBottleMessageResponse.of(message.getId());
-		createBottleMessageSentLog(message);
+		createBottleMessageSentLog(message,userId);
 		eventPublisher.publishEvent(new BottleMessageCreatedEvent(message.getId(), request.content()));
 
 		return response;
 	}
 
-	public void createBottleMessageSentLog(BottleMessageEntity message){
-		bottleMessageSentLogRepository.save(BottleMessageSentLog.builder().message(message).build());
+	public void createBottleMessageSentLog(BottleMessageEntity message,Long userId) {
+		bottleMessageSentLogRepository.save(BottleMessageSentLog.builder()
+				.message(message)
+				.senderId(userId)
+				.build());
 	}
 
 	@Transactional
