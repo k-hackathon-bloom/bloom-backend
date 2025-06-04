@@ -66,7 +66,7 @@ public class BottleMessageService {
 
 		CreateBottleMessageResponse response = CreateBottleMessageResponse.of(message.getId());
 		createBottleMessageSentLog(message,userId);
-		eventPublisher.publishEvent(new BottleMessageCreatedEvent(message.getId(), request.content()));
+		eventPublisher.publishEvent(new BottleMessageCreatedEvent(message.getId(), request.content(),userId));
 
 		return response;
 	}
