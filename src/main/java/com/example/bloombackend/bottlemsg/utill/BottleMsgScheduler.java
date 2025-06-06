@@ -17,7 +17,7 @@ public class BottleMsgScheduler {
         this.messageService = messageService;
     }
 
-    @Scheduled(cron = "0 0 10,14,18,22 * * *")
+    @Scheduled(cron = "0 0 10,14,18,22 * * *", zone = "Asia/Seoul")
     public void scheduledSend() {
         sendMessages();
     }

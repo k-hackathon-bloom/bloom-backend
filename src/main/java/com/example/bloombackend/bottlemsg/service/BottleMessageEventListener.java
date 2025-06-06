@@ -1,7 +1,7 @@
 package com.example.bloombackend.bottlemsg.service;
 
 
-import com.example.bloombackend.bottlemsg.controller.dto.request.CreateBottleMessageRequest;
+import com.example.bloombackend.bottlemsg.entity.Negativity;
 import com.example.bloombackend.bottlemsg.service.dto.EmotionScore;
 import com.example.bloombackend.bottlemsg.service.dto.SentimentAnalysisDto;
 import com.example.bloombackend.global.AIUtil;
@@ -18,10 +18,12 @@ import java.util.List;
 @Component
 public class BottleMessageEventListener {
     private final BottleMessageService bottleMessageService;
+    private final BottleMessageRedisService bottleMessageRedisService;
     private final AIUtil aiUtil;
 
-    public BottleMessageEventListener(BottleMessageService bottleMessageService, AIUtil aiUtil) {
+    public BottleMessageEventListener(BottleMessageService bottleMessageService, BottleMessageRedisService bottleMessageRedisService, AIUtil aiUtil) {
         this.bottleMessageService = bottleMessageService;
+        this.bottleMessageRedisService = bottleMessageRedisService;
         this.aiUtil = aiUtil;
     }
 
@@ -30,6 +32,9 @@ public class BottleMessageEventListener {
     public void handle(BottleMessageCreatedEvent event) {
         SentimentAnalysisDto analyze = analysisMessage(AnalyzeMessagePrompt.createAIPrompt(event.content()));
         bottleMessageService.updateMessageAnalysisResult(event.messageId(), analyze);
+        if (Negativity.valueOf(analyze.negativeImpact()) == Negativity.LOWER ){
+            bottleMessageRedisService.addSender(event.userId());
+        }
     }
 
     private SentimentAnalysisDto analysisMessage(String content) {
