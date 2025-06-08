@@ -35,7 +35,7 @@ public class FcmUtil {
 
         String payload = "{"
                 + "\"message\":{"
-                + "\"fcmToken\":\"" + targetToken + "\","
+                + "\"token\":\"" + targetToken + "\","
                 + "\"notification\":{"
                 + "\"title\":\"" + title + "\","
                 + "\"body\":\"" + body + "\""
