@@ -45,7 +45,7 @@ jobs:
 
           ssh -o StrictHostKeyChecking=no ${{ env.EC2_USERNAME }}@${{ env.EC2_INSTANCE_IP }} "mkdir -p ${REMOTE_APP_DIR}"
 
-          ACTUAL_JAR_FILE=$(find build/libs -name "${{ env.APPLICATION_NAME }}-*.jar")
+          ACTUAL_JAR_FILE=$(find build/libs -name "${{ env.APPLICATION_NAME }}-*.jar" | grep -v -- "-plain.jar$")
           echo "Detected JAR file: $ACTUAL_JAR_FILE"
 
           scp -o StrictHostKeyChecking=no "$ACTUAL_JAR_FILE" ${{ env.EC2_USERNAME }}@${{ env.EC2_INSTANCE_IP }}:${REMOTE_JAR_PATH}
