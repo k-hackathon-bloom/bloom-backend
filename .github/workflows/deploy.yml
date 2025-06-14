@@ -1,0 +1,66 @@
+name: Deploy Spring Boot App to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ap-northeast-2
+  EC2_INSTANCE_IP: ${{ secrets.EC2_INSTANCE_IP }} 
+  EC2_USERNAME: ec2-user
+  APPLICATION_NAME: bloom-backend
+  
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Build with Gradle
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build
+          
+      - name: Add SSH Key to Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+
+      - name: Transfer JAR to EC2 and Run with Docker 🚀
+        run: |
+          JAR_FILE_PATH="build/libs/${{ env.APPLICATION_NAME }}-*.jar"
+          
+          REMOTE_APP_DIR="/home/${{ env.EC2_USERNAME }}/app"
+          REMOTE_JAR_PATH="${REMOTE_APP_DIR}/app.jar" # EC2에서 사용할 JAR 파일 이름
+          
+          ssh -o StrictHostKeyChecking=no ${{ env.EC2_USERNAME }}@${{ env.EC2_INSTANCE_IP }} "mkdir -p ${REMOTE_APP_DIR}"
+          
+          ACTUAL_JAR_FILE=$(find build/libs -name "${{ env.APPLICATION_NAME }}-*.jar")
+          echo "Detected JAR file: $ACTUAL_JAR_FILE"
+          
+          scp -o StrictHostKeyChecking=no "$ACTUAL_JAR_FILE" ${{ env.EC2_USERNAME }}@${{ env.EC2_INSTANCE_IP }}:${REMOTE_JAR_PATH}
+          
+          ssh -o StrictHostKeyChecking=no ${{ env.EC2_USERNAME }}@${{ env.EC2_INSTANCE_IP }} << 'EOF'
+            echo "Stopping and removing existing Docker container..."
+            docker stop ${{ env.APPLICATION_NAME }} || true
+            docker rm ${{ env.APPLICATION_NAME }} || true
+
+            echo "Starting new Docker container..."
+            docker run -d \
+              --name ${{ env.APPLICATION_NAME }} \
+              -p 8080:8080 \
+              -v ${{ REMOTE_JAR_PATH }}:/app.jar \
+              openjdk:17-jdk-slim java -jar /app.jar
+            
+            echo "Deployment successful!"
+          EOF
