@@ -189,7 +189,8 @@ public class QuestRestDocsTest {
                 .andExpect(status().isOk())
                 .andDo(document("quest/send-daily-quest-notifications"));
     }
-    
+
+    @Test
     @DisplayName("API - 퀘스트 추천")
     void recommendQuestsTest() throws Exception {
         doReturn(new QuestRecommendResponse(List.of(10L, 20L, 30L))).when(questService).recommendQuests(testUser.getId());
