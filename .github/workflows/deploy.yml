@@ -56,34 +56,7 @@ jobs:
             docker rm ${{ env.APPLICATION_NAME }} || true
 
             echo "Starting new Docker container..."
-            docker run -d \
-              --name ${{ env.APPLICATION_NAME }} \
-              -p 8080:8080 \
-              -v ${REMOTE_JAR_PATH}:/app.jar \
-              # 데이터베이스 설정
-              -e SPRING_DATASOURCE_URL="${{ secrets.SPRING_DATASOURCE_URL }}" \
-              -e SPRING_DATASOURCE_USERNAME="${{ secrets.SPRING_DATASOURCE_USERNAME }}" \
-              -e SPRING_DATASOURCE_PASSWORD="${{ secrets.SPRING_DATASOURCE_PASSWORD }}" \
-              # Redis 설정
-              -e SPRING_DATA_REDIS_HOST="${{ secrets.SPRING_DATA_REDIS_HOST }}" \
-              -e SPRING_DATA_REDIS_PORT="${{ secrets.SPRING_DATA_REDIS_PORT }}" \
-              # OAuth Kakao 설정
-              -e OAUTH_KAKAO_CLIENT_ID="${{ secrets.OAUTH_KAKAO_CLIENT_ID }}" \
-              -e OAUTH_KAKAO_CLIENT_SECRET="${{ secrets.OAUTH_KAKAO_CLIENT_SECRET }}" \
-              -e OAUTH_KAKAO_REDIRECT_URI="${{ secrets.OAUTH_KAKAO_REDIRECT_URI }}" \
-              # JWT 설정
-              -e JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}" \
-              -e JWT_ACCESS_TOKEN_VALID_TIME="${{ secrets.JWT_ACCESS_TOKEN_VALID_TIME }}" \
-              -e JWT_REFRESH_TOKEN_VALID_TIME="${{ secrets.JWT_REFRESH_TOKEN_VALID_TIME }}" \
-              # AWS S3 설정
-              -e CLOUD_AWS_CREDENTIALS_ACCESS_KEY="${{ secrets.CLOUD_AWS_CREDENTIALS_ACCESS_KEY }}" \
-              -e CLOUD_AWS_CREDENTIALS_SECRET_KEY="${{ secrets.CLOUD_AWS_CREDENTIALS_SECRET_KEY }}" \
-              -e CLOUD_AWS_S3_BUCKET_NAME="${{ secrets.CLOUD_AWS_S3_BUCKET_NAME }}" \
-              # AI API Key 설정
-              -e AI_API_KEY="${{ secrets.AI_API_KEY }}" \
-              # 배포 프로파일 활성화
-              -e SPRING_PROFILES_ACTIVE=prod \
-              openjdk:17-jdk-slim java -jar /app.jar
+            docker run -d --name ${{ env.APPLICATION_NAME }} -p 8080:8080 -v ${REMOTE_JAR_PATH}:/app.jar -e SPRING_DATASOURCE_URL="${{ secrets.SPRING_DATASOURCE_URL }}" -e SPRING_DATASOURCE_USERNAME="${{ secrets.SPRING_DATASOURCE_USERNAME }}" -e SPRING_DATASOURCE_PASSWORD="${{ secrets.SPRING_DATASOURCE_PASSWORD }}" -e SPRING_JPA_HIBERNATE_DDL_AUTO=none -e SPRING_JPA_PROPERTIES_HIBERNATE_SQL=false -e SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL=false -e SPRING_JPA_PROPERTIES_HIBERNATE_SHOW_SQL=false -e SPRING_JPA_PROPERTIES_HIBERNATE_USE_SQL_COMMENTS=false -e SPRING_DATA_REDIS_HOST="${{ secrets.SPRING_DATA_REDIS_HOST }}" -e SPRING_DATA_REDIS_PORT="${{ secrets.SPRING_DATA_REDIS_PORT }}" -e OAUTH_KAKAO_CLIENT_ID="${{ secrets.OAUTH_KAKAO_CLIENT_ID }}" -e OAUTH_KAKAO_CLIENT_SECRET="${{ secrets.OAUTH_KAKAO_CLIENT_SECRET }}" -e OAUTH_KAKAO_REDIRECT_URI="${{ secrets.OAUTH_KAKAO_REDIRECT_URI }}" -e JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}" -e JWT_ACCESS_TOKEN_VALID_TIME="${{ secrets.JWT_ACCESS_TOKEN_VALID_TIME }}" -e JWT_REFRESH_TOKEN_VALID_TIME="${{ secrets.JWT_REFRESH_TOKEN_VALID_TIME }}" -e CLOUD_AWS_CREDENTIALS_ACCESS_KEY="${{ secrets.CLOUD_AWS_CREDENTIALS_ACCESS_KEY }}" -e CLOUD_AWS_CREDENTIALS_SECRET_KEY="${{ secrets.CLOUD_AWS_CREDENTIALS_SECRET_KEY }}" -e CLOUD_AWS_S3_BUCKET_NAME="${{ secrets.CLOUD_AWS_S3_BUCKET_NAME }}" -e AI_API_KEY="${{ secrets.AI_API_KEY }}" -e SPRING_PROFILES_ACTIVE=prod openjdk:17-jdk-slim java -jar /app.jar
 
             echo "Deployment successful!"
           EOF
