@@ -39,7 +39,7 @@ oauth:
       user-info-url: https://kapi.kakao.com/v2/user/me
 
 jwt:
-  secret_key: dG9rZW5fa2V5X2Zvcl9ibG9vbTI0MDkwN19kRzlyWlc1ZmEyVjVYMlp2Y2w5aWJHOXZiVEkwTURrd053
+  secret_key: dG9rZW5fa2V5X2Zvcl9ibG9vbTI0MDkwN19kRzlyWlc1ZmEyVjVYMlp2Y2w5aWJHOXZiVEkwTURrd053 # 테스트용
   access_token:
     valid_time: 1800 # 30분 (30 * 60)
   refresh_token:
