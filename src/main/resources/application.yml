@@ -1,13 +1,11 @@
 spring:
   cache:
     type: simple
-  config:
-    import: "optional:application-secret.yml"
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/bloom
-    username: root
-    password: jiwon1923
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -26,15 +24,38 @@ spring:
       max-request-size: 10MB
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
       timeout: 6000ms
 
 oauth:
   kakao:
+    client-id: ${OAUTH_KAKAO_CLIENT_ID}
+    client-secret: ${OAUTH_KAKAO_CLIENT_SECRET}
+    redirect-uri: ${OAUTH_KAKAO_REDIRECT_URI}
     uri:
-      authorization-url: https://kauth.kakao.com/oauth/authorize
       token-url: https://kauth.kakao.com/oauth/token
       user-info-url: https://kapi.kakao.com/v2/user/me
-      user-name-attribute: id
 
+jwt:
+  secret_key: ${JWT_SECRET_KEY}
+  access_token:
+    valid_time: ${JWT_ACCESS_TOKEN_VALID_TIME}
+  refresh_token:
+    valid_time: ${JWT_REFRESH_TOKEN_VALID_TIME}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${CLOUD_AWS_CREDENTIALS_ACCESS_KEY}
+      secret-key: ${CLOUD_AWS_CREDENTIALS_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    s3:
+      bucket: ${CLOUD_AWS_S3_BUCKET_NAME}
+
+ai:
+  api:
+    key: ${AI_API_KEY}
