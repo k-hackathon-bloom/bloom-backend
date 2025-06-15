@@ -1,6 +1,6 @@
 spring:
-  config:
-    import: "optional:application-secret.yml"
+  cache:
+    type: simple
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MYSQL
@@ -32,8 +32,31 @@ spring:
 
 oauth:
   kakao:
+    client-id: 1234
+    redirect-uri: http://localhost:8080/api/auth/oauth/kakao
     uri:
-      authorization-url: https://kauth.kakao.com/oauth/authorize
       token-url: https://kauth.kakao.com/oauth/token
       user-info-url: https://kapi.kakao.com/v2/user/me
-      user-name-attribute: id
+
+jwt:
+  secret_key: dG9rZW5fa2V5X2Zvcl9ibG9vbTI0MDkwN19kRzlyWlc1ZmEyVjVYMlp2Y2w5aWJHOXZiVEkwTURrd053 # 테스트용
+  access_token:
+    valid_time: 1800 # 30분 (30 * 60)
+  refresh_token:
+    valid_time: 604800 # 7일 (7 * 24 * 60 * 60)
+
+cloud:
+  aws:
+    credentials:
+      access-key: 1234
+      secret-key: 1234
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    s3:
+      bucket: 1234
+
+ai:
+  api:
+    key: 1234
